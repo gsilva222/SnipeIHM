@@ -81,6 +81,9 @@ export class MovieCardComponent implements OnInit, OnDestroy {
   /** Indica se está a processar ação de favorito */
   isProcessingFavorite: boolean = false;
 
+  /** Classe de animação temporária para feedback visual */
+  favoriteAnimationClass: string = '';
+
   /** Subject para gerir unsubscriptions */
   private destroy$ = new Subject<void>();
   /**
@@ -160,8 +163,7 @@ export class MovieCardComponent implements OnInit, OnDestroy {
   /**
    * Manipula clique no botão de favorito
    * @param event - Evento do clique (para parar propagação)
-   */
-  async onFavoriteClick(event: Event): Promise<void> {
+   */ async onFavoriteClick(event: Event): Promise<void> {
     event.stopPropagation(); // Evita que o clique no card seja disparado
 
     if (this.isProcessingFavorite) {
@@ -174,10 +176,12 @@ export class MovieCardComponent implements OnInit, OnDestroy {
       if (this.isFavorite) {
         await this.filmesService.removeFromFavorites(this.movie.id);
         this.isFavorite = false;
+        this.triggerAnimation('favorite-removed');
         this.removedFromFavorites.emit(this.movie.id);
       } else {
         await this.filmesService.addToFavorites(this.movie);
         this.isFavorite = true;
+        this.triggerAnimation('favorite-added');
         this.addedToFavorites.emit(this.movie);
       }
     } catch (error) {
@@ -185,6 +189,16 @@ export class MovieCardComponent implements OnInit, OnDestroy {
     } finally {
       this.isProcessingFavorite = false;
     }
+  }
+
+  /**
+   * Dispara animação temporária no botão de favoritos
+   */
+  private triggerAnimation(animationClass: string): void {
+    this.favoriteAnimationClass = animationClass;
+    setTimeout(() => {
+      this.favoriteAnimationClass = '';
+    }, 600); // Duração da animação
   }
 
   /**
@@ -288,12 +302,11 @@ export class MovieCardComponent implements OnInit, OnDestroy {
   /**
    * Obtém o ícone do botão de favorito
    * @returns Nome do ícone Ionicon
-   */
-  getFavoriteIcon(): string {
+   */ getFavoriteIcon(): string {
     if (this.isProcessingFavorite) {
       return 'hourglass';
     }
-    return this.isFavorite ? 'bookmark' : 'bookmark-outline';
+    return this.isFavorite ? 'heart' : 'heart-outline';
   }
 
   /**
@@ -301,7 +314,7 @@ export class MovieCardComponent implements OnInit, OnDestroy {
    * @returns Classe CSS para a cor
    */
   getFavoriteColor(): string {
-    return this.isFavorite ? 'warning' : 'medium';
+    return this.isFavorite ? 'danger' : 'medium';
   }
 
   /**

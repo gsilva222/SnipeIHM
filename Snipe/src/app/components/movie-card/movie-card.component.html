@@ -20,11 +20,11 @@
     <div class="media-type-badge">
       {{ getMediaType() }}
     </div>
-
     <!-- Botão de favorito -->
     <ion-button
       fill="clear"
       class="favorite-button"
+      [ngClass]="favoriteAnimationClass"
       [color]="getFavoriteColor()"
       (click)="onFavoriteClick($event)"
       [disabled]="isProcessingFavorite"
@@ -67,25 +67,10 @@
         <span>{{ movie.original_language.toUpperCase() }}</span>
       </div>
     </div>
-
     <!-- Indicador de clique para mais detalhes -->
     <div class="more-details-hint">
       <ion-icon name="chevron-forward" size="small"></ion-icon>
       <span>Toque para mais detalhes</span>
-    </div>
-
-    <!-- Botões de ação (apenas se showRemoveButton for true) -->
-    <div class="action-buttons" *ngIf="showRemoveButton">
-      <ion-button
-        fill="outline"
-        size="small"
-        color="danger"
-        (click)="onFavoriteClick($event)"
-        [disabled]="isProcessingFavorite"
-      >
-        <ion-icon name="trash" slot="start"></ion-icon>
-        {{ stringsService.getString("favorites.remove_favorite") || "Remover" }}
-      </ion-button>
     </div>
 
     <!-- Indicador de bom filme -->
