@@ -1,0 +1,151 @@
+<!-- Página de Favoritos -->
+<ion-header [translucent]="true">
+  <ion-toolbar color="primary">
+    <ion-title>
+      <ion-icon name="heart" slot="start"></ion-icon>
+      {{ stringsService.get('favoritos') }}
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="favoritos-content">
+  <!-- Refresh -->
+  <ion-refresher slot="fixed" (ionRefresh)="onRefresh($event)">
+    <ion-refresher-content
+      [pullingIcon]="'refresh'"
+      [pullingText]="stringsService.get('puxar_para_atualizar')"
+      [refreshingSpinner]="'crescent'"
+      [refreshingText]="stringsService.get('carregando')"
+    >
+    </ion-refresher-content>
+  </ion-refresher>
+
+  <!-- Estatísticas e filtros -->
+  <div class="stats-filters-container" *ngIf="favoritos.length > 0">
+    <!-- Estatísticas -->
+    <div class="stats-card">
+      <ion-grid>
+        <ion-row>
+          <ion-col size="4" class="stat-item">
+            <div class="stat-number">{{ obterEstatisticas().total }}</div>
+            <div class="stat-label">{{ stringsService.get('total') }}</div>
+          </ion-col>
+          <ion-col size="4" class="stat-item">
+            <div class="stat-number">{{ obterEstatisticas().filmes }}</div>
+            <div class="stat-label">{{ stringsService.get('filmes') }}</div>
+          </ion-col>
+          <ion-col size="4" class="stat-item">
+            <div class="stat-number">{{ obterEstatisticas().series }}</div>
+            <div class="stat-label">{{ stringsService.get('series') }}</div>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+    </div>
+
+    <!-- Filtros -->
+    <div class="filters-container">
+      <!-- Segmented control para tipo -->
+      <ion-segment
+        [(ngModel)]="tipoSelecionado"
+        (ionChange)="onTipoChanged()"
+        class="tipo-segment"
+      >
+        <ion-segment-button value="todos">
+          <ion-label>{{ stringsService.get('todos') }}</ion-label>
+        </ion-segment-button>
+        <ion-segment-button value="filme">
+          <ion-label>{{ stringsService.get('filmes') }}</ion-label>
+        </ion-segment-button>
+        <ion-segment-button value="tv">
+          <ion-label>{{ stringsService.get('series') }}</ion-label>
+        </ion-segment-button>
+      </ion-segment>
+
+      <!-- Select de ordenação -->
+      <ion-item class="ordenacao-item">
+        <ion-label>{{ stringsService.get('ordenar_por') }}</ion-label>
+        <ion-select [(ngModel)]="ordenacao" (ionChange)="onOrdenacaoChanged()">
+          <ion-select-option value="data_adicionado"
+            >{{ stringsService.get('data_adicao') }}</ion-select-option
+          >
+          <ion-select-option value="alfabetica"
+            >{{ stringsService.get('alfabetica') }}</ion-select-option
+          >
+          <ion-select-option value="avaliacao"
+            >{{ stringsService.get('melhor_avaliacao') }}</ion-select-option
+          >
+          <ion-select-option value="ano"
+            >{{ stringsService.get('ano_lancamento') }}</ion-select-option
+          >
+        </ion-select>
+      </ion-item>
+    </div>
+  </div>
+
+  <!-- Loading -->
+  <div class="loading-container" *ngIf="isLoading">
+    <ion-spinner name="crescent"></ion-spinner>
+    <ion-text color="medium">
+      <p>{{ stringsService.get('carregando_favoritos') }}...</p>
+    </ion-text>
+  </div>
+
+  <!-- Lista de favoritos -->
+  <ion-grid
+    class="favoritos-grid"
+    *ngIf="!isLoading && favoritosFiltrados.length > 0"
+  >
+    <ion-row>
+      <ion-col
+        size="6"
+        size-md="4"
+        size-lg="3"
+        *ngFor="let filme of favoritosFiltrados; trackBy: trackByFilmeId"
+      >
+        <app-movie-card [movie]="filme"></app-movie-card>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+
+  <!-- Sem favoritos -->
+  <div class="empty-state" *ngIf="!isLoading && favoritos.length === 0">
+    <ion-icon name="heart" size="large" color="medium"></ion-icon>
+    <ion-text color="medium">
+      <h3>{{ stringsService.get('sem_favoritos') }}</h3>
+      <p>{{ stringsService.get('adicione_primeiros_favoritos') }}</p>
+    </ion-text>
+    <ion-button
+      (click)="irParaPesquisa()"
+      fill="solid"
+      color="primary"
+      class="explore-button"
+    >
+      <ion-icon name="search" slot="start"></ion-icon>
+      {{ stringsService.get('explorar_filmes') }}
+    </ion-button>
+  </div>
+
+  <!-- Sem resultados no filtro -->
+  <div
+    class="empty-filter"
+    *ngIf="!isLoading && favoritos.length > 0 && favoritosFiltrados.length === 0"
+  >
+    <ion-icon name="filter" size="large" color="medium"></ion-icon>
+    <ion-text color="medium">
+      <h3>{{ stringsService.get('sem_resultados_filtro') }}</h3>
+      <p>{{ stringsService.get('tente_outro_filtro') }}</p>
+    </ion-text>
+  </div>
+
+  <!-- FAB para ir à pesquisa -->
+  <ion-fab
+    slot="fixed"
+    vertical="bottom"
+    horizontal="end"
+    *ngIf="favoritos.length > 0"
+  >
+    <ion-fab-button (click)="irParaPesquisa()" color="secondary">
+      <ion-icon name="search"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+</ion-content>

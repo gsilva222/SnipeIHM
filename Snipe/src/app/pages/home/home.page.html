@@ -1,0 +1,140 @@
+<!-- Página inicial da aplicação Snipe -->
+<ion-header [translucent]="true" class="snipe-header">
+  <ion-toolbar color="primary">
+    <ion-title>
+      <div class="header-title">
+        <ion-icon name="home"></ion-icon>
+        {{ stringsService.getString('app.title') }}
+      </div>
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="home-content">
+  <!-- Header colapsável -->
+  <ion-header collapse="condense">
+    <ion-toolbar color="primary">
+      <ion-title size="large"> Início </ion-title>
+    </ion-toolbar>
+  </ion-header>
+
+  <!-- Loading inicial -->
+  <div *ngIf="isLoading" class="loading-container">
+    <ion-spinner name="crescent" color="primary"></ion-spinner>
+    <p>A carregar conteúdo...</p>
+  </div>
+
+  <!-- Conteúdo principal -->
+  <div *ngIf="!isLoading" class="home-container">
+    <!-- Botão para ir à pesquisa -->
+    <ion-button
+      expand="block"
+      fill="outline"
+      color="secondary"
+      (click)="goToSearch()"
+      class="search-button"
+    >
+      <ion-icon name="search" slot="start"></ion-icon>
+      Pesquisar Filmes e Séries
+    </ion-button>
+
+    <!-- Seção Filmes Populares -->
+    <div class="section" *ngIf="popularMovies.length > 0">
+      <div class="section-header">
+        <h2>
+          <ion-icon name="film" color="primary"></ion-icon>
+          Filmes Populares
+        </h2>
+        <ion-button fill="clear" size="small" (click)="viewAllMovies()">
+          Ver Todos
+          <ion-icon name="chevron-forward" slot="end"></ion-icon>
+        </ion-button>
+      </div>
+
+      <!-- Slides de Filmes -->
+      <swiper-container
+        slides-per-view="2.2"
+        space-between="16"
+        class="movies-swiper"
+      >
+        <swiper-slide *ngFor="let movie of popularMovies">
+          <div class="movie-slide" (click)="openMovieDetails(movie)">
+            <div class="movie-poster">
+              <img
+                [src]="filmesService.getImageUrl(movie.poster_path, 'w300')"
+                [alt]="movie.title"
+                onerror="this.src='assets/icon/no-image.png'"
+              />
+              <div class="movie-rating">
+                <ion-icon name="star" color="warning"></ion-icon>
+                {{ movie.vote_average | number:'1.1-1' }}
+              </div>
+            </div>
+            <div class="movie-info">
+              <h3>{{ movie.title }}</h3>
+              <p class="movie-year">
+                {{ (movie.release_date | date:'yyyy') || 'N/A' }}
+              </p>
+            </div>
+          </div>
+        </swiper-slide>
+      </swiper-container>
+    </div>
+
+    <!-- Seção Séries Populares -->
+    <div class="section" *ngIf="popularTVShows.length > 0">
+      <div class="section-header">
+        <h2>
+          <ion-icon name="play" color="secondary"></ion-icon>
+          Séries Populares
+        </h2>
+        <ion-button fill="clear" size="small" (click)="viewAllTVShows()">
+          Ver Todas
+          <ion-icon name="chevron-forward" slot="end"></ion-icon>
+        </ion-button>
+      </div>
+
+      <!-- Slides de Séries -->
+      <swiper-container
+        slides-per-view="2.2"
+        space-between="16"
+        class="movies-swiper"
+      >
+        <swiper-slide *ngFor="let show of popularTVShows">
+          <div class="movie-slide" (click)="openMovieDetails(show)">
+            <div class="movie-poster">
+              <img
+                [src]="filmesService.getImageUrl(show.poster_path, 'w300')"
+                [alt]="show.name"
+                onerror="this.src='assets/icon/no-image.png'"
+              />
+              <div class="movie-rating">
+                <ion-icon name="star" color="warning"></ion-icon>
+                {{ show.vote_average | number:'1.1-1' }}
+              </div>
+            </div>
+            <div class="movie-info">
+              <h3>{{ show.name }}</h3>
+              <p class="movie-year">
+                {{ (show.first_air_date | date:'yyyy') || 'N/A' }}
+              </p>
+            </div>
+          </div>
+        </swiper-slide>
+      </swiper-container>
+    </div>
+
+    <!-- Mensagem quando não há conteúdo -->
+    <div
+      *ngIf="popularMovies.length === 0 && popularTVShows.length === 0"
+      class="no-content"
+    >
+      <ion-icon name="film" size="large" color="medium"></ion-icon>
+      <h3>Sem conteúdo disponível</h3>
+      <p>Não foi possível carregar o conteúdo popular.</p>
+      <ion-button fill="outline" (click)="loadPopularContent()">
+        Tentar Novamente
+      </ion-button>
+    </div>
+  </div>
+</ion-content>

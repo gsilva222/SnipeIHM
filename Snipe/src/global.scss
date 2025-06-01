@@ -1,0 +1,123 @@
+/*
+ * App Global CSS
+ * ----------------------------------------------------------------------------
+ * Put style rules here that you want to apply globally. These styles are for
+ * the entire app and not just one component. Additionally, this file can be
+ * used as an entry point to import other CSS/Sass files to be included in the
+ * output CSS.
+ * For more information on global stylesheets, visit the documentation:
+ * https://ionicframework.com/docs/layout/global-stylesheets
+ */
+
+/* Core CSS required for Ionic components to work properly */
+@import "@ionic/angular/css/core.css";
+
+/* Basic CSS for apps built with Ionic */
+@import "@ionic/angular/css/normalize.css";
+@import "@ionic/angular/css/structure.css";
+@import "@ionic/angular/css/typography.css";
+@import "@ionic/angular/css/display.css";
+
+/* Optional CSS utils that can be commented out */
+@import "@ionic/angular/css/padding.css";
+@import "@ionic/angular/css/float-elements.css";
+@import "@ionic/angular/css/text-alignment.css";
+@import "@ionic/angular/css/text-transformation.css";
+@import "@ionic/angular/css/flex-utils.css";
+
+/**
+ * Ionic Dark Mode
+ * -----------------------------------------------------
+ * For more info, please see:
+ * https://ionicframework.com/docs/theming/dark-mode
+ */
+
+/* @import "@ionic/angular/css/palettes/dark.always.css"; */
+/* @import "@ionic/angular/css/palettes/dark.class.css"; */
+@import "@ionic/angular/css/palettes/dark.system.css";
+
+/**
+ * Custom Global Styles
+ * -----------------------------------------------------
+ * Custom styles for improved mobile experience and modal appearance
+ */
+
+// Movie Details Modal Styles
+.movie-details-modal {
+  --border-radius: 16px 16px 0 0;
+  --box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.2);
+
+  .modal-wrapper {
+    --border-radius: 16px 16px 0 0;
+    --background: var(--ion-background-color);
+    --color: var(--ion-text-color);
+
+    @media (max-width: 767px) {
+      --border-radius: 16px 16px 0 0;
+      border-radius: 16px 16px 0 0;
+    }
+  }
+
+  // Garantir que o texto seja sempre legível
+  ion-content {
+    --background: var(--ion-background-color);
+    --color: var(--ion-text-color);
+  }
+
+  ion-header {
+    --background: var(--ion-background-color);
+    --color: var(--ion-text-color);
+  }
+}
+
+// Custom Toast Styles
+.custom-toast {
+  --background: var(--ion-color-success);
+  --color: var(--ion-color-success-contrast);
+  --border-radius: 12px;
+
+  .toast-wrapper {
+    border-radius: 12px;
+  }
+}
+
+// Improved chip styles for mobile
+.filter-chip {
+  --background: var(--ion-color-light);
+  --color: var(--ion-color-dark);
+  margin: 2px 4px;
+
+  &.chip-color-primary {
+    --background: var(--ion-color-primary);
+    --color: var(--ion-color-primary-contrast);
+  }
+
+  ion-icon {
+    font-size: 16px;
+  }
+}
+
+// Smooth transitions for all interactive elements
+ion-button,
+ion-chip,
+ion-card {
+  transition: all 0.2s ease-in-out;
+}
+
+// Better mobile touch targets
+@media (max-width: 767px) {
+  ion-button {
+    --min-height: 44px;
+  }
+
+  ion-chip {
+    --min-height: 40px;
+  }
+
+  .movie-card {
+    .favorite-button {
+      --min-width: 44px;
+      --min-height: 44px;
+    }
+  }
+}

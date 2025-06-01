@@ -1,0 +1,130 @@
+<!-- Página de Resultados da Pesquisa -->
+<ion-header [translucent]="true">
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-back-button
+        (click)="voltarPagina()"
+        default-href="/tabs/home"
+      ></ion-back-button>
+    </ion-buttons>
+    <ion-title>{{ stringsService.get('resultados') }}</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="resultados-content">
+  <!-- Barra de pesquisa e filtros compactos -->
+  <div class="search-filters-container">
+    <!-- Barra de pesquisa -->
+    <ion-searchbar
+      [(ngModel)]="termoPesquisa"
+      [placeholder]="'Pesquisar filmes e séries...'"
+      (ionInput)="onNovaPesquisa()"
+      [debounce]="500"
+      show-clear-button="focus"
+      class="compact-searchbar"
+    >
+    </ion-searchbar>
+
+    <!-- Filtros compactos em linha -->
+    <div class="compact-filters">
+      <!-- Filtro de Género -->
+      <ion-chip
+        class="filter-chip"
+        [color]="generoSelecionado ? 'primary' : 'medium'"
+        (click)="openGenreModal()"
+      >
+        <ion-icon name="library-outline" slot="start"></ion-icon>
+        <ion-label
+          >{{ generoSelecionado ? obterNomeGenero(generoSelecionado) : 'Género'
+          }}</ion-label
+        >
+        <ion-icon name="chevron-down" slot="end"></ion-icon>
+      </ion-chip>
+
+      <!-- Filtro de Ordenação -->
+      <ion-chip
+        class="filter-chip"
+        [color]="ordenacao !== 'popularity.desc' ? 'primary' : 'medium'"
+        (click)="openSortModal()"
+      >
+        <ion-icon name="funnel-outline" slot="start"></ion-icon>
+        <ion-label>{{ getSortLabel() }}</ion-label>
+        <ion-icon name="chevron-down" slot="end"></ion-icon>
+      </ion-chip>
+
+      <!-- Botão limpar filtros -->
+      <ion-chip
+        class="clear-chip"
+        color="danger"
+        *ngIf="generoSelecionado || ordenacao !== 'popularity.desc'"
+        (click)="clearFilters()"
+      >
+        <ion-icon name="close" slot="start"></ion-icon>
+        <ion-label>Limpar</ion-label>
+      </ion-chip>
+    </div>
+  </div>
+  <!-- Informações da pesquisa compactas -->
+  <div class="search-info" *ngIf="termoPesquisa">
+    <ion-chip color="tertiary" class="search-term-chip">
+      <ion-icon name="search" slot="start"></ion-icon>
+      <ion-label>"{{ termoPesquisa }}"</ion-label>
+    </ion-chip>
+  </div>
+  <!-- Loading moderno -->
+  <div class="loading-container" *ngIf="isLoading && filmes.length === 0">
+    <div class="loading-content">
+      <ion-spinner name="crescent" color="primary"></ion-spinner>
+      <ion-text color="medium">
+        <p>A descobrir filmes incríveis...</p>
+      </ion-text>
+    </div>
+  </div>
+  <!-- Resultados com cards compactos -->
+  <ion-grid class="results-grid" *ngIf="filmes.length > 0">
+    <ion-row>
+      <ion-col
+        size="6"
+        size-md="4"
+        size-lg="3"
+        *ngFor="let filme of filmes; trackBy: trackByFilmeId"
+      >
+        <app-movie-card
+          [movie]="filme"
+          [hideOverview]="true"
+          (movieClicked)="onMovieClicked($event)"
+          (addedToFavorites)="onAddedToFavorites($event)"
+          (removedFromFavorites)="onRemovedFromFavorites($event)"
+        ></app-movie-card>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+  <!-- Estado vazio melhorado -->
+  <div
+    class="no-results"
+    *ngIf="!isLoading && filmes.length === 0 && (termoPesquisa || generoSelecionado)"
+  >
+    <div class="no-results-content">
+      <ion-icon name="film-outline" class="no-results-icon"></ion-icon>
+      <h3>Nenhum resultado encontrado</h3>
+      <p>Tenta ajustar os filtros ou pesquisar por outro termo</p>
+      <ion-button fill="outline" color="primary" (click)="clearFilters()">
+        <ion-icon name="refresh" slot="start"></ion-icon>
+        Limpar filtros
+      </ion-button>
+    </div>
+  </div>
+
+  <!-- Infinite Scroll -->
+  <ion-infinite-scroll
+    *ngIf="hasMoreResults && filmes.length > 0"
+    (ionInfinite)="onIonInfinite($event)"
+    threshold="100px"
+  >
+    <ion-infinite-scroll-content
+      [loadingSpinner]="'bubbles'"
+      [loadingText]="stringsService.get('carregando_mais')"
+    >
+    </ion-infinite-scroll-content>
+  </ion-infinite-scroll>
+</ion-content>

@@ -1,0 +1,147 @@
+<!-- Modal de detalhes do filme -->
+<ion-header>
+  <ion-toolbar>
+    <ion-title>{{ getTitle() }}</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="closeModal()">
+        <ion-icon name="close" slot="icon-only"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="movie-details-content">
+  <!-- Hero Section com poster e informações básicas -->
+  <div class="hero-section">
+    <div class="poster-container">
+      <img
+        [src]="getPosterUrl()"
+        [alt]="getTitle()"
+        class="poster-image"
+        loading="lazy"
+      />
+
+      <!-- Botão de favorito grande -->
+      <ion-fab vertical="bottom" horizontal="end" slot="fixed">
+        <ion-fab-button
+          [color]="isFavorite ? 'danger' : 'primary'"
+          (click)="toggleFavorite()"
+          [disabled]="isProcessingFavorite"
+        >
+          <ion-icon [name]="isFavorite ? 'heart' : 'heart-outline'"></ion-icon>
+        </ion-fab-button>
+      </ion-fab>
+    </div>
+
+    <div class="hero-info">
+      <h1 class="movie-title">{{ getTitle() }}</h1>
+      <p class="movie-subtitle" *ngIf="getOriginalTitle()">
+        {{ getOriginalTitle() }}
+      </p>
+
+      <!-- Rating e ano -->
+      <div class="quick-info">
+        <div class="rating-badge" [ngClass]="getRatingColor()">
+          <ion-icon name="star"></ion-icon>
+          <span>{{ getRating() }}</span>
+        </div>
+        <span class="release-year">{{ getReleaseYear() }}</span>
+        <ion-chip [color]="getMediaTypeColor()" outline>
+          <ion-label>{{ getMediaType() }}</ion-label>
+        </ion-chip>
+      </div>
+    </div>
+  </div>
+
+  <!-- Seção de informações detalhadas -->
+  <div class="details-section">
+    <!-- Sinopse -->
+    <div class="section-block" *ngIf="movie.overview">
+      <h2 class="section-title">
+        <ion-icon name="document-text-outline"></ion-icon>
+        Sinopse
+      </h2>
+      <p class="overview-text">{{ movie.overview }}</p>
+    </div>
+
+    <!-- Informações técnicas -->
+    <div class="section-block">
+      <h2 class="section-title">
+        <ion-icon name="information-circle-outline"></ion-icon>
+        Informações
+      </h2>
+
+      <div class="info-grid">
+        <div class="info-item" *ngIf="movie.vote_average">
+          <span class="info-label">Avaliação</span>
+          <div class="info-value">
+            <ion-icon name="star" color="warning"></ion-icon>
+            {{ movie.vote_average.toFixed(1) }}/10
+            <span class="vote-count">({{ movie.vote_count }} votos)</span>
+          </div>
+        </div>
+
+        <div class="info-item" *ngIf="getReleaseDate()">
+          <span class="info-label">Data de Lançamento</span>
+          <span class="info-value">{{ getFormattedReleaseDate() }}</span>
+        </div>
+
+        <div class="info-item" *ngIf="movie.original_language">
+          <span class="info-label">Idioma Original</span>
+          <span class="info-value">{{ getLanguageName() }}</span>
+        </div>
+
+        <div class="info-item" *ngIf="movie.popularity">
+          <span class="info-label">Popularidade</span>
+          <div class="info-value">
+            <ion-icon name="trending-up" color="success"></ion-icon>
+            {{ movie.popularity.toFixed(0) }}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Géneros -->
+    <div class="section-block" *ngIf="movie.genres && movie.genres.length > 0">
+      <h2 class="section-title">
+        <ion-icon name="library-outline"></ion-icon>
+        Géneros
+      </h2>
+      <div class="genres-container">
+        <ion-chip *ngFor="let genre of movie.genres" color="primary" outline>
+          <ion-label>{{ genre.name }}</ion-label>
+        </ion-chip>
+      </div>
+    </div>
+
+    <!-- Estado de favorito -->
+    <div class="section-block favorite-status" *ngIf="isFavorite">
+      <div class="favorite-info">
+        <ion-icon name="heart" color="danger"></ion-icon>
+        <div>
+          <h3>Adicionado aos Favoritos</h3>
+          <p *ngIf="movie.dataAdicionado">
+            {{ getDateAdded() }}
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Ações -->
+  <div class="actions-section">
+    <ion-button
+      expand="block"
+      [color]="isFavorite ? 'danger' : 'primary'"
+      (click)="toggleFavorite()"
+      [disabled]="isProcessingFavorite"
+      class="main-action-button"
+    >
+      <ion-icon
+        [name]="isFavorite ? 'heart-dislike' : 'heart'"
+        slot="start"
+      ></ion-icon>
+      {{ isFavorite ? "Remover dos Favoritos" : "Adicionar aos Favoritos" }}
+    </ion-button>
+  </div>
+</ion-content>

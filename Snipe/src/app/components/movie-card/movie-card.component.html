@@ -1,0 +1,99 @@
+<!-- Card do filme/série com informações compactas -->
+<ion-card class="movie-card" (click)="onMovieClick()">
+  <!-- Container da imagem com overlay de classificação -->
+  <div class="poster-container">
+    <!-- Imagem do poster -->
+    <img
+      [src]="getPosterUrl()"
+      [alt]="getTitle()"
+      class="poster-image"
+      loading="lazy"
+    />
+
+    <!-- Overlay com classificação -->
+    <div class="rating-overlay" [ngClass]="getRatingColor()">
+      <ion-icon [name]="getStarIcon()"></ion-icon>
+      <span class="rating-text">{{ getRating() }}</span>
+    </div>
+
+    <!-- Badge do tipo de conteúdo -->
+    <div class="media-type-badge">
+      {{ getMediaType() }}
+    </div>
+
+    <!-- Botão de favorito -->
+    <ion-button
+      fill="clear"
+      class="favorite-button"
+      [color]="getFavoriteColor()"
+      (click)="onFavoriteClick($event)"
+      [disabled]="isProcessingFavorite"
+    >
+      <ion-icon [name]="getFavoriteIcon()" slot="icon-only"></ion-icon>
+    </ion-button>
+  </div>
+
+  <!-- Conteúdo do card - versão compacta -->
+  <ion-card-content class="card-content-compact">
+    <!-- Título e ano -->
+    <div class="title-section">
+      <h3 class="movie-title">{{ getTitle() }}</h3>
+      <span class="release-year" *ngIf="getReleaseYear()">
+        ({{ getReleaseYear() }})
+      </span>
+    </div>
+
+    <!-- Descrição resumida (opcional) -->
+    <p class="movie-overview-short" *ngIf="!hideOverview && movie.overview">
+      {{ getFormattedOverview(60) }}...
+    </p>
+
+    <!-- Informações básicas em linha -->
+    <div class="compact-info">
+      <!-- Rating -->
+      <div class="info-chip rating-chip" *ngIf="movie.vote_average">
+        <ion-icon name="star" size="small"></ion-icon>
+        <span>{{ getRating() }}</span>
+      </div>
+
+      <!-- Popularidade -->
+      <div class="info-chip" *ngIf="movie.popularity">
+        <ion-icon name="trending-up" size="small"></ion-icon>
+        <span>{{ movie.popularity.toFixed(0) }}</span>
+      </div>
+
+      <!-- Idioma -->
+      <div class="info-chip" *ngIf="movie.original_language">
+        <span>{{ movie.original_language.toUpperCase() }}</span>
+      </div>
+    </div>
+
+    <!-- Indicador de clique para mais detalhes -->
+    <div class="more-details-hint">
+      <ion-icon name="chevron-forward" size="small"></ion-icon>
+      <span>Toque para mais detalhes</span>
+    </div>
+
+    <!-- Botões de ação (apenas se showRemoveButton for true) -->
+    <div class="action-buttons" *ngIf="showRemoveButton">
+      <ion-button
+        fill="outline"
+        size="small"
+        color="danger"
+        (click)="onFavoriteClick($event)"
+        [disabled]="isProcessingFavorite"
+      >
+        <ion-icon name="trash" slot="start"></ion-icon>
+        {{ stringsService.getString("favorites.remove_favorite") || "Remover" }}
+      </ion-button>
+    </div>
+
+    <!-- Indicador de bom filme -->
+    <div class="quality-indicator" *ngIf="hasGoodRating()">
+      <ion-chip color="success" outline="true">
+        <ion-icon name="thumbs-up" size="small"></ion-icon>
+        <ion-label>Recomendado</ion-label>
+      </ion-chip>
+    </div>
+  </ion-card-content>
+</ion-card>

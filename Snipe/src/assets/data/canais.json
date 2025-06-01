@@ -1,0 +1,126 @@
+{
+  "canais": [
+    {
+      "id": "rtp1",
+      "nome": "RTP1",
+      "logo": "assets/images/rtp1.png",
+      "tipo": "television",
+      "categoria": "generalista",
+      "programacao": [
+        {
+          "hora": "21:00",
+          "titulo": "Telejornal",
+          "tipo": "noticiario",
+          "genero": "informacao"
+        },
+        {
+          "hora": "22:30",
+          "titulo": "Filme da Noite",
+          "tipo": "filme",
+          "genero": "drama"
+        }
+      ]
+    },
+    {
+      "id": "rtp2",
+      "nome": "RTP2",
+      "logo": "assets/images/rtp2.png",
+      "tipo": "television",
+      "categoria": "cultural",
+      "programacao": [
+        {
+          "hora": "21:00",
+          "titulo": "Documentário",
+          "tipo": "documentario",
+          "genero": "cultural"
+        }
+      ]
+    },
+    {
+      "id": "sic",
+      "nome": "SIC",
+      "logo": "assets/images/sic.png",
+      "tipo": "television",
+      "categoria": "generalista",
+      "programacao": [
+        {
+          "hora": "20:00",
+          "titulo": "Jornal da Noite",
+          "tipo": "noticiario",
+          "genero": "informacao"
+        },
+        {
+          "hora": "21:30",
+          "titulo": "Novela",
+          "tipo": "serie",
+          "genero": "drama"
+        }
+      ]
+    },
+    {
+      "id": "tvi",
+      "nome": "TVI",
+      "logo": "assets/images/tvi.png",
+      "tipo": "television",
+      "categoria": "generalista",
+      "programacao": [
+        {
+          "hora": "20:00",
+          "titulo": "Jornal das 8",
+          "tipo": "noticiario",
+          "genero": "informacao"
+        }
+      ]
+    }
+  ],
+  "plataformas": [
+    {
+      "id": "netflix",
+      "nome": "Netflix",
+      "logo": "assets/images/netflix.png",
+      "tipo": "streaming",
+      "categoria": "premium",
+      "url": "https://www.netflix.com"
+    },
+    {
+      "id": "hbo",
+      "nome": "HBO Portugal",
+      "logo": "assets/images/hbo.png",
+      "tipo": "streaming",
+      "categoria": "premium",
+      "url": "https://www.hboportugal.com"
+    },
+    {
+      "id": "opto_sic",
+      "nome": "OPTO SIC",
+      "logo": "assets/images/opto.png",
+      "tipo": "streaming",
+      "categoria": "nacional",
+      "url": "https://opto.sic.pt"
+    },
+    {
+      "id": "rtp_play",
+      "nome": "RTP Play",
+      "logo": "assets/images/rtpplay.png",
+      "tipo": "streaming",
+      "categoria": "nacional",
+      "url": "https://www.rtp.pt/play"
+    },
+    {
+      "id": "prime_video",
+      "nome": "Amazon Prime Video",
+      "logo": "assets/images/prime.png",
+      "tipo": "streaming",
+      "categoria": "premium",
+      "url": "https://www.primevideo.com"
+    },
+    {
+      "id": "disney_plus",
+      "nome": "Disney+",
+      "logo": "assets/images/disney.png",
+      "tipo": "streaming",
+      "categoria": "premium",
+      "url": "https://www.disneyplus.com"
+    }
+  ]
+}

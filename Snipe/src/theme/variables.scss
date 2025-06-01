@@ -1,0 +1,290 @@
+// For information on how to create your own theme, please see:
+// http://ionicframework.com/docs/theming/
+
+/**
+ * Configuração do tema Snipe
+ * Cores personalizadas para o projeto universitário
+ */
+
+// Importar fontes do Google Fonts
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap");
+
+/** Ionic CSS Variables **/
+:root {
+  /** Cores principais do tema Snipe **/
+
+  // Texto principal
+  --ion-color-text: #ffffff;
+
+  // Background principal
+  --ion-color-background: #171a21;
+
+  // Primary (azul principal)
+  --ion-color-primary: #233a80;
+  --ion-color-primary-rgb: 35, 58, 128;
+  --ion-color-primary-contrast: #ffffff;
+  --ion-color-primary-contrast-rgb: 255, 255, 255;
+  --ion-color-primary-shade: #1f3270;
+  --ion-color-primary-tint: #39498d;
+
+  // Secondary (azul escuro)
+  --ion-color-secondary: #2b475f;
+  --ion-color-secondary-rgb: 43, 71, 95;
+  --ion-color-secondary-contrast: #ffffff;
+  --ion-color-secondary-contrast-rgb: 255, 255, 255;
+  --ion-color-secondary-shade: #263e53;
+  --ion-color-secondary-tint: #40596f;
+
+  // Tertiary (mantemos padrão)
+  --ion-color-tertiary: #3dc2ff;
+  --ion-color-tertiary-rgb: 61, 194, 255;
+  --ion-color-tertiary-contrast: #ffffff;
+  --ion-color-tertiary-contrast-rgb: 255, 255, 255;
+  --ion-color-tertiary-shade: #36abe0;
+  --ion-color-tertiary-tint: #50c8ff;
+
+  // Success (verde)
+  --ion-color-success: #2dd36f;
+  --ion-color-success-rgb: 45, 211, 111;
+  --ion-color-success-contrast: #ffffff;
+  --ion-color-success-contrast-rgb: 255, 255, 255;
+  --ion-color-success-shade: #28ba62;
+  --ion-color-success-tint: #42d77d;
+
+  // Warning (amarelo)
+  --ion-color-warning: #ffc409;
+  --ion-color-warning-rgb: 255, 196, 9;
+  --ion-color-warning-contrast: #000000;
+  --ion-color-warning-contrast-rgb: 0, 0, 0;
+  --ion-color-warning-shade: #e0ac08;
+  --ion-color-warning-tint: #ffca22;
+
+  // Danger (vermelho)
+  --ion-color-danger: #eb445a;
+  --ion-color-danger-rgb: 235, 68, 90;
+  --ion-color-danger-contrast: #ffffff;
+  --ion-color-danger-contrast-rgb: 255, 255, 255;
+  --ion-color-danger-shade: #cf3c4f;
+  --ion-color-danger-tint: #ed576b;
+
+  // Light (cinza claro)
+  --ion-color-light: #f4f5f8;
+  --ion-color-light-rgb: 244, 245, 248;
+  --ion-color-light-contrast: #000000;
+  --ion-color-light-contrast-rgb: 0, 0, 0;
+  --ion-color-light-shade: #d7d8da;
+  --ion-color-light-tint: #f5f6f9;
+
+  // Medium (cinza médio)
+  --ion-color-medium: #92949c;
+  --ion-color-medium-rgb: 146, 148, 156;
+  --ion-color-medium-contrast: #ffffff;
+  --ion-color-medium-contrast-rgb: 255, 255, 255;
+  --ion-color-medium-shade: #808289;
+  --ion-color-medium-tint: #9d9fa6;
+
+  // Dark (preto)
+  --ion-color-dark: #222428;
+  --ion-color-dark-rgb: 34, 36, 40;
+  --ion-color-dark-contrast: #ffffff;
+  --ion-color-dark-contrast-rgb: 255, 255, 255;
+  --ion-color-dark-shade: #1e2023;
+  --ion-color-dark-tint: #383a3e;
+
+  /** Cor personalizada Snipe **/
+  --ion-color-snipe: #233a80;
+  --ion-color-snipe-rgb: 35, 58, 128;
+  --ion-color-snipe-contrast: #ffffff;
+  --ion-color-snipe-contrast-rgb: 255, 255, 255;
+  --ion-color-snipe-shade: #1f3270;
+  --ion-color-snipe-tint: #39498d;
+
+  /** Cor de destaque (accent) **/
+  --ion-color-accent: #66c0f4;
+  --ion-color-accent-rgb: 102, 192, 244;
+  --ion-color-accent-contrast: #000000;
+  --ion-color-accent-contrast-rgb: 0, 0, 0;
+  --ion-color-accent-shade: #5aa9d7;
+  --ion-color-accent-tint: #75c6f5;
+
+  /** Configurações de background globais **/
+  --ion-background-color: var(--ion-color-background);
+  --ion-background-color-rgb: 23, 26, 33;
+
+  --ion-text-color: var(--ion-color-text);
+  --ion-text-color-rgb: 255, 255, 255;
+
+  /** Configurações de toolbar **/
+  --ion-toolbar-background: var(--ion-color-primary);
+  --ion-toolbar-color: var(--ion-color-primary-contrast);
+
+  /** Configurações de tab bar **/
+  --ion-tab-bar-background: var(--ion-color-secondary);
+  --ion-tab-bar-color: var(--ion-color-medium);
+  --ion-tab-bar-color-selected: var(--ion-color-accent);
+
+  /** Configurações de card **/
+  --ion-card-background: var(--ion-color-secondary);
+  --ion-card-color: var(--ion-color-text);
+
+  /** Configurações de item **/
+  --ion-item-background: transparent;
+  --ion-item-color: var(--ion-color-text);
+
+  /** Configurações de input **/
+  --ion-input-background: rgba(255, 255, 255, 0.1);
+  --ion-input-color: var(--ion-color-text);
+
+  /** Configurações de button **/
+  --ion-button-background: var(--ion-color-primary);
+  --ion-button-color: var(--ion-color-primary-contrast);
+
+  /** Tipografia personalizada **/
+  --ion-font-family: "Inter", "Segoe UI", "Roboto", "Oxygen", "Ubuntu",
+    "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
+
+  /** Tamanhos de fonte personalizados **/
+  --ion-font-size-xs: 0.75rem; // 12px
+  --ion-font-size-sm: 0.875rem; // 14px
+  --ion-font-size-base: 1rem; // 16px
+  --ion-font-size-lg: 1.125rem; // 18px
+  --ion-font-size-xl: 1.25rem; // 20px
+  --ion-font-size-2xl: 1.5rem; // 24px
+  --ion-font-size-3xl: 1.875rem; // 30px
+  --ion-font-size-4xl: 2.25rem; // 36px
+
+  /** Pesos de fonte **/
+  --ion-font-weight-light: 300;
+  --ion-font-weight-normal: 400;
+  --ion-font-weight-medium: 500;
+  --ion-font-weight-semibold: 600;
+  --ion-font-weight-bold: 700;
+
+  /** Spacing personalizado **/
+  --ion-spacing-xs: 0.25rem; // 4px
+  --ion-spacing-sm: 0.5rem; // 8px
+  --ion-spacing-base: 1rem; // 16px
+  --ion-spacing-lg: 1.5rem; // 24px
+  --ion-spacing-xl: 2rem; // 32px
+  --ion-spacing-2xl: 3rem; // 48px
+
+  /** Border radius **/
+  --ion-border-radius-sm: 0.375rem; // 6px
+  --ion-border-radius-base: 0.5rem; // 8px
+  --ion-border-radius-lg: 0.75rem; // 12px
+  --ion-border-radius-xl: 1rem; // 16px
+
+  /** Shadows **/
+  --ion-box-shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --ion-box-shadow-base: 0 1px 3px 0 rgba(0, 0, 0, 0.1),
+    0 1px 2px 0 rgba(0, 0, 0, 0.06);
+  --ion-box-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
+    0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  --ion-box-shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1),
+    0 10px 10px -5px rgba(0, 0, 0, 0.04);
+
+  /** Transições **/
+  --ion-transition-fast: 0.15s ease;
+  --ion-transition-base: 0.3s ease;
+  --ion-transition-slow: 0.5s ease;
+}
+
+/** Classe para cor Snipe personalizada **/
+.ion-color-snipe {
+  --ion-color-base: var(--ion-color-snipe);
+  --ion-color-base-rgb: var(--ion-color-snipe-rgb);
+  --ion-color-contrast: var(--ion-color-snipe-contrast);
+  --ion-color-contrast-rgb: var(--ion-color-snipe-contrast-rgb);
+  --ion-color-shade: var(--ion-color-snipe-shade);
+  --ion-color-tint: var(--ion-color-snipe-tint);
+}
+
+/** Classe para cor accent personalizada **/
+.ion-color-accent {
+  --ion-color-base: var(--ion-color-accent);
+  --ion-color-base-rgb: var(--ion-color-accent-rgb);
+  --ion-color-contrast: var(--ion-color-accent-contrast);
+  --ion-color-contrast-rgb: var(--ion-color-accent-contrast-rgb);
+  --ion-color-shade: var(--ion-color-accent-shade);
+  --ion-color-tint: var(--ion-color-accent-tint);
+}
+
+/** Configurações de fonte global **/
+* {
+  font-family: var(--ion-font-family);
+}
+
+/** Headers personalizados **/
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: "Poppins", var(--ion-font-family);
+  font-weight: var(--ion-font-weight-semibold);
+  color: var(--ion-color-text);
+  margin: 0;
+  line-height: 1.2;
+}
+
+h1 {
+  font-size: var(--ion-font-size-4xl);
+}
+h2 {
+  font-size: var(--ion-font-size-3xl);
+}
+h3 {
+  font-size: var(--ion-font-size-2xl);
+}
+h4 {
+  font-size: var(--ion-font-size-xl);
+}
+h5 {
+  font-size: var(--ion-font-size-lg);
+}
+h6 {
+  font-size: var(--ion-font-size-base);
+}
+
+/** Parágrafos personalizados **/
+p {
+  color: var(--ion-color-text);
+  line-height: 1.6;
+  margin: 0 0 var(--ion-spacing-base) 0;
+}
+
+/** Scrollbars personalizadas (webkit) **/
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--ion-color-background);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--ion-color-medium);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--ion-color-accent);
+}
+
+/** Modo claro (override se necessário) **/
+@media (prefers-color-scheme: light) {
+  :root {
+    --ion-color-text: #000000;
+    --ion-color-background: #ffffff;
+    --ion-background-color: #ffffff;
+    --ion-text-color: #000000;
+
+    --ion-card-background: #ffffff;
+    --ion-item-background: #ffffff;
+
+    --ion-color-medium: #6c757d;
+    --ion-color-light: #f8f9fa;
+  }
+}

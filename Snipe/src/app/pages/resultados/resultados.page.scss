@@ -1,0 +1,235 @@
+// Página de resultados com interface compacta e moderna
+.resultados-content {
+  --background: var(--ion-color-background);
+}
+
+// Container principal dos filtros
+.search-filters-container {
+  padding: 12px 0 8px 0;
+  border-bottom: 1px solid var(--ion-color-light);
+  background: var(--ion-color-background);
+}
+
+// Barra de pesquisa compacta
+.compact-searchbar {
+  margin: 0 16px 12px 16px;
+
+  ion-searchbar {
+    --background: var(--ion-color-light);
+    --border-radius: 20px;
+    --box-shadow: none;
+    --placeholder-color: var(--ion-color-medium);
+    --color: var(--ion-color-dark);
+    font-size: 14px;
+    height: 40px;
+  }
+}
+
+// Container dos chips de filtro
+.filters-chips-container {
+  padding: 0 12px 8px 12px;
+  overflow-x: auto;
+  white-space: nowrap;
+  -webkit-overflow-scrolling: touch;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+
+  scrollbar-width: none;
+}
+
+.filters-chips-row {
+  display: flex;
+  gap: 8px;
+  min-width: fit-content;
+  padding: 0 4px;
+}
+
+// Chips de filtro com estilos modernos
+.filter-chip {
+  --background: var(--ion-color-light);
+  --color: var(--ion-color-medium-shade);
+  height: 32px;
+  font-size: 13px;
+  font-weight: 500;
+  border-radius: 16px;
+  white-space: nowrap;
+  transition: all 0.2s ease;
+  min-width: fit-content;
+
+  ion-icon {
+    font-size: 16px;
+    margin-right: 4px;
+  }
+
+  &.active {
+    --background: var(--ion-color-primary);
+    --color: var(--ion-color-primary-contrast);
+    transform: scale(1.02);
+  }
+
+  &.clear-filters {
+    --background: var(--ion-color-danger-tint);
+    --color: var(--ion-color-danger);
+
+    ion-icon {
+      font-size: 14px;
+    }
+  }
+}
+
+// Container da informação de pesquisa
+.search-info-container {
+  padding: 8px 16px;
+  background: var(--ion-color-light-tint);
+  border-bottom: 1px solid var(--ion-color-light-shade);
+}
+
+.search-info-chip {
+  --background: var(--ion-color-primary-tint);
+  --color: var(--ion-color-primary);
+  height: 28px;
+  font-size: 12px;
+  font-weight: 500;
+  border-radius: 14px;
+
+  ion-icon {
+    font-size: 14px;
+    margin-right: 4px;
+  }
+}
+
+// Grid de filmes responsivo
+.movies-grid {
+  padding: 16px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 16px;
+}
+
+// Estados vazios e loading melhorados
+.no-results {
+  text-align: center;
+  padding: 60px 20px;
+}
+
+.no-results-icon {
+  font-size: 72px;
+  opacity: 0.2;
+  margin-bottom: 24px;
+  color: var(--ion-color-medium);
+}
+
+.no-results-title {
+  font-size: 20px;
+  font-weight: 600;
+  margin-bottom: 12px;
+  color: var(--ion-color-dark);
+}
+
+.no-results-message {
+  font-size: 14px;
+  opacity: 0.7;
+  color: var(--ion-color-medium-shade);
+  margin-bottom: 24px;
+  line-height: 1.4;
+}
+
+.retry-button {
+  --background: var(--ion-color-primary);
+  --color: var(--ion-color-primary-contrast);
+  --border-radius: 20px;
+  height: 40px;
+  margin: 0 auto;
+  min-width: 120px;
+}
+
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+
+  ion-spinner {
+    width: 32px;
+    height: 32px;
+    margin-bottom: 16px;
+  }
+
+  .loading-text {
+    font-size: 14px;
+    color: var(--ion-color-medium-shade);
+    font-weight: 500;
+  }
+}
+
+// ActionSheets customizados
+.genre-action-sheet,
+.sort-action-sheet {
+  .action-sheet-group {
+    .action-sheet-button {
+      font-size: 16px;
+
+      &.action-sheet-selected {
+        color: var(--ion-color-primary);
+        font-weight: 600;
+      }
+    }
+  }
+}
+
+// Media queries para responsividade mobile
+@media (max-width: 768px) {
+  .movies-grid {
+    grid-template-columns: 1fr;
+    padding: 12px;
+    gap: 12px;
+  }
+
+  .compact-searchbar {
+    margin: 0 12px 12px 12px;
+  }
+
+  .filters-chips-container {
+    padding: 0 8px 8px 8px;
+  }
+
+  .search-info-container {
+    padding: 6px 12px;
+  }
+
+  .no-results {
+    padding: 40px 16px;
+  }
+
+  .no-results-icon {
+    font-size: 64px;
+  }
+
+  .no-results-title {
+    font-size: 18px;
+  }
+}
+
+@media (max-width: 480px) {
+  .filter-chip {
+    font-size: 12px;
+    height: 30px;
+
+    ion-icon {
+      font-size: 14px;
+    }
+  }
+
+  .search-info-chip {
+    font-size: 11px;
+    height: 26px;
+  }
+
+  .compact-searchbar ion-searchbar {
+    height: 36px;
+    font-size: 13px;
+  }
+}
