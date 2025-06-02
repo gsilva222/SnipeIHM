@@ -45,4 +45,19 @@ export const routes: Routes = [
     redirectTo: '/tabs/home',
     pathMatch: 'full',
   },
+   {
+    path: 'logo',
+    loadComponent: () =>
+      import('./pages/logo/logo.page').then((m) => m.LogoPage),
+  },
+    {
+    path: 'login',
+    loadComponent: () =>
+      import('./pages/signin/login.page').then((m) => m.LoginPage),
+  },
+  {
+    path: 'register',
+    loadComponent: () =>
+      import('./pages/register/register.page').then((m) => m.RegisterPage),
+  },
 ];
