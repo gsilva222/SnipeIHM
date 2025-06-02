@@ -39,15 +39,17 @@
     font-size: 22px;
     font-weight: 700;
     margin: 0;
-    color: var(--ion-text-color);
+    color: #ffffff;
     line-height: 1.2;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
   }
 
   .movie-subtitle {
     font-size: 14px;
-    color: var(--ion-color-medium);
+    color: rgba(255, 255, 255, 0.7);
     font-style: italic;
     margin: 0;
+    font-weight: 500;
   }
 }
 
@@ -56,49 +58,56 @@
   align-items: center;
   gap: 12px;
   flex-wrap: wrap;
-
   .rating-badge {
     display: flex;
     align-items: center;
     gap: 4px;
-    padding: 4px 8px;
+    padding: 6px 12px;
     border-radius: 12px;
     font-size: 13px;
-    font-weight: 600;
+    font-weight: 700;
+    backdrop-filter: blur(4px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
 
     ion-icon {
       font-size: 14px;
+      filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.2));
     }
 
     &.rating-excellent {
-      background: var(--ion-color-success-tint);
-      color: var(--ion-color-success);
+      background: rgba(16, 185, 129, 0.9);
+      color: #ffffff;
+      text-shadow: 0 1px 1px rgba(0, 0, 0, 0.3);
     }
 
     &.rating-good {
-      background: var(--ion-color-warning-tint);
-      color: var(--ion-color-warning);
+      background: rgba(245, 158, 11, 0.9);
+      color: #000000;
+      text-shadow: 0 1px 1px rgba(255, 255, 255, 0.5);
     }
 
     &.rating-average {
-      background: var(--ion-color-medium-tint);
-      color: var(--ion-color-medium-shade);
+      background: rgba(156, 163, 175, 0.9);
+      color: #ffffff;
+      text-shadow: 0 1px 1px rgba(0, 0, 0, 0.3);
     }
 
     &.rating-poor {
-      background: var(--ion-color-danger-tint);
-      color: var(--ion-color-danger);
+      background: rgba(239, 68, 68, 0.9);
+      color: #ffffff;
+      text-shadow: 0 1px 1px rgba(0, 0, 0, 0.3);
     }
 
     &.rating-na {
-      background: var(--ion-color-light);
-      color: var(--ion-color-medium);
+      background: rgba(107, 114, 128, 0.9);
+      color: #ffffff;
+      text-shadow: 0 1px 1px rgba(0, 0, 0, 0.3);
     }
   }
   .release-year {
     font-size: 14px;
-    color: var(--ion-color-medium);
-    font-weight: 500;
+    color: rgba(255, 255, 255, 0.7);
+    font-weight: 600;
   }
 }
 
@@ -114,13 +123,15 @@
     align-items: center;
     gap: 8px;
     font-size: 18px;
-    font-weight: 600;
+    font-weight: 700;
     margin: 0 0 12px 0;
-    color: var(--ion-text-color);
+    color: #ffffff;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
 
     ion-icon {
       font-size: 20px;
-      color: var(--ion-color-primary);
+      color: rgba(102, 192, 244, 0.9);
+      filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.2));
     }
   }
 }
@@ -128,9 +139,10 @@
 .overview-text {
   font-size: 15px;
   line-height: 1.6;
-  color: var(--ion-text-color);
+  color: rgba(255, 255, 255, 0.9);
   margin: 0;
   text-align: justify;
+  font-weight: 400;
 }
 
 // Grid de informações

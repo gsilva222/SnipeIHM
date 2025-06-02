@@ -40,11 +40,10 @@
         >
         <ion-icon name="chevron-down" slot="end"></ion-icon>
       </ion-chip>
-
       <!-- Filtro de Ordenação -->
       <ion-chip
         class="filter-chip"
-        [color]="ordenacao !== 'popularity.desc' ? 'primary' : 'medium'"
+        [color]="ordenacao ? 'primary' : 'medium'"
         (click)="openSortModal()"
       >
         <ion-icon name="funnel-outline" slot="start"></ion-icon>
@@ -52,11 +51,23 @@
         <ion-icon name="chevron-down" slot="end"></ion-icon>
       </ion-chip>
 
+      <!-- Botão de direção da ordenação -->
+      <ion-chip
+        class="direction-chip"
+        color="secondary"
+        *ngIf="ordenacao"
+        (click)="toggleSortDirection()"
+      >
+        <ion-icon [name]="getSortDirectionIcon()" slot="start"></ion-icon>
+        <ion-label
+          >{{ ordenacaoDirection === 'desc' ? 'Desc' : 'Asc' }}</ion-label
+        >
+      </ion-chip>
       <!-- Botão limpar filtros -->
       <ion-chip
         class="clear-chip"
         color="danger"
-        *ngIf="generoSelecionado || ordenacao !== 'popularity.desc'"
+        *ngIf="generoSelecionado || ordenacao"
         (click)="clearFilters()"
       >
         <ion-icon name="close" slot="start"></ion-icon>

@@ -26,24 +26,19 @@
 }
 
 // Container dos chips de filtro
-.filters-chips-container {
+.compact-filters {
   padding: 0 12px 8px 12px;
   overflow-x: auto;
   white-space: nowrap;
   -webkit-overflow-scrolling: touch;
+  display: flex;
+  gap: 8px;
+  min-width: fit-content;
 
   &::-webkit-scrollbar {
     display: none;
   }
-
   scrollbar-width: none;
-}
-
-.filters-chips-row {
-  display: flex;
-  gap: 8px;
-  min-width: fit-content;
-  padding: 0 4px;
 }
 
 // Chips de filtro com estilos modernos
@@ -76,6 +71,29 @@
     ion-icon {
       font-size: 14px;
     }
+  }
+}
+
+// Chip específico para direção da ordenação
+.direction-chip {
+  --background: var(--ion-color-secondary-tint);
+  --color: var(--ion-color-secondary);
+  height: 32px;
+  font-size: 12px;
+  font-weight: 600;
+  border-radius: 16px;
+  min-width: 60px;
+  transition: all 0.3s ease;
+
+  ion-icon {
+    font-size: 14px;
+    margin-right: 2px;
+  }
+
+  &:active {
+    transform: scale(0.95);
+    --background: var(--ion-color-secondary);
+    --color: var(--ion-color-secondary-contrast);
   }
 }
 

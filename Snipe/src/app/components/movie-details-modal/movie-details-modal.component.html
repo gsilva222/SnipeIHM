@@ -47,6 +47,7 @@
         </div>
         <span class="release-year">{{ getReleaseYear() }}</span>
         <ion-chip [color]="getMediaTypeColor()" outline>
+          <ion-icon [name]="getMediaTypeIcon()" slot="start"></ion-icon>
           <ion-label>{{ getMediaType() }}</ion-label>
         </ion-chip>
       </div>
@@ -115,17 +116,7 @@
     </div>
 
     <!-- Estado de favorito -->
-    <div class="section-block favorite-status" *ngIf="isFavorite">
-      <div class="favorite-info">
-        <ion-icon name="heart" color="danger"></ion-icon>
-        <div>
-          <h3>Adicionado aos Favoritos</h3>
-          <p *ngIf="movie.dataAdicionado">
-            {{ getDateAdded() }}
-          </p>
-        </div>
-      </div>
-    </div>
+    <!-- Removido: cartão informativo de favoritos -->
   </div>
 
   <!-- Ações -->

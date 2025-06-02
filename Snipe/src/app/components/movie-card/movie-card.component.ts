@@ -30,6 +30,9 @@ import {
   language,
   people,
   trash,
+  filmOutline,
+  tvOutline,
+  playOutline,
 } from 'ionicons/icons';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
@@ -112,6 +115,9 @@ export class MovieCardComponent implements OnInit, OnDestroy {
       language,
       people,
       trash,
+      filmOutline,
+      tvOutline,
+      playOutline,
     });
   }
 
@@ -275,20 +281,58 @@ export class MovieCardComponent implements OnInit, OnDestroy {
 
     return this.movie.overview.substring(0, maxLength) + '...';
   }
-
   /**
    * Obtém o tipo de media formatado
    * @returns Tipo de media em português
    */
   getMediaType(): string {
-    switch (this.movie.media_type) {
-      case 'movie':
-        return 'Filme';
-      case 'tv':
-        return 'Série';
-      default:
-        return 'Conteúdo';
-    }
+    // Prioriza media_type se disponível
+    if (this.movie.media_type === 'movie') return 'Filme';
+    if (this.movie.media_type === 'tv') return 'Série';
+
+    // Fallback baseado na presença de campos específicos
+    if (this.movie.title && !this.movie.name) return 'Filme';
+    if (this.movie.name && !this.movie.title) return 'Série';
+    if (this.movie.first_air_date) return 'Série';
+    if (this.movie.release_date) return 'Filme';
+
+    return 'Conteúdo';
+  }
+
+  /**
+   * Obtém o ícone apropriado para o tipo de mídia
+   * @returns Nome do ícone Ionicon
+   */
+  getMediaTypeIcon(): string {
+    // Prioriza media_type se disponível
+    if (this.movie.media_type === 'movie') return 'film-outline';
+    if (this.movie.media_type === 'tv') return 'tv-outline';
+
+    // Fallback baseado na presença de campos específicos
+    if (this.movie.title && !this.movie.name) return 'film-outline';
+    if (this.movie.name && !this.movie.title) return 'tv-outline';
+    if (this.movie.first_air_date) return 'tv-outline';
+    if (this.movie.release_date) return 'film-outline';
+
+    return 'play-outline';
+  }
+
+  /**
+   * Obtém a classe CSS apropriada para o badge de tipo de mídia
+   * @returns Classe CSS para styling
+   */
+  getMediaTypeBadgeClass(): string {
+    // Prioriza media_type se disponível
+    if (this.movie.media_type === 'movie') return 'movie-badge';
+    if (this.movie.media_type === 'tv') return 'tv-badge';
+
+    // Fallback baseado na presença de campos específicos
+    if (this.movie.title && !this.movie.name) return 'movie-badge';
+    if (this.movie.name && !this.movie.title) return 'tv-badge';
+    if (this.movie.first_air_date) return 'tv-badge';
+    if (this.movie.release_date) return 'movie-badge';
+
+    return 'content-badge';
   }
 
   /**

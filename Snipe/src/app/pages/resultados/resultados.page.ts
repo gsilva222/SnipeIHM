@@ -36,6 +36,9 @@ import {
   close,
   refresh,
   filmOutline,
+  arrowUp,
+  arrowDown,
+  swapVertical,
 } from 'ionicons/icons';
 
 import { FilmesService } from '../../services/filmes.service';
@@ -85,9 +88,11 @@ export class ResultadosPage implements OnInit {
 
   /** Género selecionado para filtro */
   generoSelecionado: string = '';
-
   /** Tipo de ordenação selecionado */
-  ordenacao: string = 'popularity.desc';
+  ordenacao: string = '';
+
+  /** Direção da ordenação (asc/desc) */
+  ordenacaoDirection: 'asc' | 'desc' = 'desc';
 
   /** Página atual para paginação */
   paginaAtual: number = 1;
@@ -117,6 +122,9 @@ export class ResultadosPage implements OnInit {
       close,
       refresh,
       filmOutline,
+      arrowUp,
+      arrowDown,
+      swapVertical,
     });
   }
 
@@ -158,7 +166,6 @@ export class ResultadosPage implements OnInit {
     this.paginaAtual = 1;
     this.hasMoreResults = true;
   }
-
   /**
    * Carrega os resultados da pesquisa
    */
@@ -169,12 +176,17 @@ export class ResultadosPage implements OnInit {
 
     try {
       let resultados: Movie[] = [];
+      const sortOrder = this.getFullSortOrder();
+
       if (this.termoPesquisa) {
         // Pesquisa por termo
         const response = await this.filmesService
           .searchMovies(this.termoPesquisa, this.paginaAtual)
           .toPromise();
         resultados = response?.results || [];
+
+        // Aplicar ordenação local (a API do TMDB não suporta sort em search)
+        resultados = this.applySorting(resultados);
       } else if (this.generoSelecionado) {
         // Pesquisa por género
         const response = await this.filmesService
@@ -185,6 +197,9 @@ export class ResultadosPage implements OnInit {
           )
           .toPromise();
         resultados = response?.results || [];
+
+        // Aplicar ordenação local
+        resultados = this.applySorting(resultados);
       }
 
       if (resultados.length === 0) {
@@ -310,7 +325,6 @@ export class ResultadosPage implements OnInit {
 
     await actionSheet.present();
   }
-
   /**
    * Abre modal para seleção de ordenação
    */
@@ -321,28 +335,28 @@ export class ResultadosPage implements OnInit {
         {
           text: 'Popularidade',
           handler: () => {
-            this.ordenacao = 'popularity.desc';
+            this.ordenacao = 'popularity';
             this.onOrdenacaoChanged();
           },
         },
         {
-          text: 'Mais Recentes',
+          text: 'Data de Lançamento',
           handler: () => {
-            this.ordenacao = 'release_date.desc';
+            this.ordenacao = 'release_date';
             this.onOrdenacaoChanged();
           },
         },
         {
           text: 'Melhor Avaliação',
           handler: () => {
-            this.ordenacao = 'vote_average.desc';
+            this.ordenacao = 'vote_average';
             this.onOrdenacaoChanged();
           },
         },
         {
-          text: 'Alfabética',
+          text: 'Ordem Alfabética',
           handler: () => {
-            this.ordenacao = 'title.asc';
+            this.ordenacao = 'title';
             this.onOrdenacaoChanged();
           },
         },
@@ -356,13 +370,13 @@ export class ResultadosPage implements OnInit {
 
     await actionSheet.present();
   }
-
   /**
    * Limpa todos os filtros
    */
   clearFilters() {
     this.generoSelecionado = '';
-    this.ordenacao = 'popularity.desc';
+    this.ordenacao = '';
+    this.ordenacaoDirection = 'desc';
     this.termoPesquisa = '';
     this.filmes = [];
     this.paginaAtual = 1;
@@ -372,18 +386,85 @@ export class ResultadosPage implements OnInit {
    * Obtém o label da ordenação atual
    */
   getSortLabel(): string {
-    switch (this.ordenacao) {
-      case 'popularity.desc':
-        return 'Popular';
-      case 'release_date.desc':
-        return 'Recentes';
-      case 'vote_average.desc':
-        return 'Avaliação';
-      case 'title.asc':
-        return 'A-Z';
-      default:
-        return 'Ordenar';
+    if (!this.ordenacao) {
+      return 'Ordenar por';
     }
+
+    switch (this.ordenacao) {
+      case 'popularity':
+        return 'Popularidade';
+      case 'release_date':
+        return 'Data de Lançamento';
+      case 'vote_average':
+        return 'Avaliação';
+      case 'title':
+        return 'Alfabética';
+      default:
+        return 'Ordenar por';
+    }
+  }
+
+  /**
+   * Obtém o ícone da direção da ordenação
+   */
+  getSortDirectionIcon(): string {
+    return this.ordenacaoDirection === 'desc' ? 'arrow-down' : 'arrow-up';
+  }
+  /**
+   * Inverte a direção da ordenação
+   */
+  toggleSortDirection() {
+    if (this.ordenacao) {
+      this.ordenacaoDirection =
+        this.ordenacaoDirection === 'desc' ? 'asc' : 'desc';
+      this.onOrdenacaoChanged();
+    }
+  }
+
+  /**
+   * Obtém a ordenação completa (campo + direção)
+   */
+  getFullSortOrder(): string {
+    if (!this.ordenacao) {
+      return 'popularity.desc'; // padrão quando não há ordenação selecionada
+    }
+    return `${this.ordenacao}.${this.ordenacaoDirection}`;
+  }
+
+  /**
+   * Aplica ordenação local aos resultados
+   */
+  private applySorting(movies: Movie[]): Movie[] {
+    if (!this.ordenacao) return movies;
+
+    return movies.sort((a, b) => {
+      let comparison = 0;
+
+      switch (this.ordenacao) {
+        case 'popularity':
+          comparison = (b.popularity || 0) - (a.popularity || 0);
+          break;
+        case 'release_date':
+          const dateA = new Date(
+            a.release_date || a.first_air_date || '1900-01-01'
+          );
+          const dateB = new Date(
+            b.release_date || b.first_air_date || '1900-01-01'
+          );
+          comparison = dateB.getTime() - dateA.getTime();
+          break;
+        case 'vote_average':
+          comparison = (b.vote_average || 0) - (a.vote_average || 0);
+          break;
+        case 'title':
+          const titleA = (a.title || a.name || '').toLowerCase();
+          const titleB = (b.title || b.name || '').toLowerCase();
+          comparison = titleA.localeCompare(titleB);
+          break;
+      }
+
+      return this.ordenacaoDirection === 'asc' ? -comparison : comparison;
+    });
   }
   /**
    * Callback quando um filme é clicado (abre modal de detalhes)

@@ -15,6 +15,7 @@ import {
   IonButton,
   IonIcon,
   IonSpinner,
+  ModalController,
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import {
@@ -30,6 +31,7 @@ import {
 import { FilmesService, Movie } from '../../services/filmes.service';
 import { StringsService } from '../../services/strings.service';
 import { MovieCardComponent } from '../../components/movie-card/movie-card.component';
+import { MovieDetailsModalComponent } from '../../components/movie-details-modal/movie-details-modal.component';
 
 /**
  * Página inicial da aplicação Snipe
@@ -51,6 +53,7 @@ import { MovieCardComponent } from '../../components/movie-card/movie-card.compo
     IonIcon,
     IonSpinner,
     CommonModule,
+    MovieCardComponent,
   ],
 })
 export class HomePage implements OnInit, OnDestroy {
@@ -65,16 +68,17 @@ export class HomePage implements OnInit, OnDestroy {
 
   /** Subject para gerir unsubscriptions */
   private destroy$ = new Subject<void>();
-
   /**
    * Construtor da página Home
    * @param router - Router para navegação
    * @param filmesService - Serviço de filmes
    * @param stringsService - Serviço de strings
+   * @param modalController - Controller para modais
    */ constructor(
     private router: Router,
     public filmesService: FilmesService,
-    public stringsService: StringsService
+    public stringsService: StringsService,
+    private modalController: ModalController
   ) {
     // Registar ícones necessários
     addIcons({
@@ -165,13 +169,21 @@ export class HomePage implements OnInit, OnDestroy {
       queryParams: { type: 'popular_tv' },
     });
   }
-
   /**
    * Abre detalhes de um filme/série
    * @param movie - Filme ou série selecionada
    */
-  openMovieDetails(movie: Movie) {
-    // Futuramente pode navegar para página de detalhes
-    console.log('Abrir detalhes:', movie.title || movie.name);
+  async openMovieDetails(movie: Movie) {
+    const modal = await this.modalController.create({
+      component: MovieDetailsModalComponent,
+      componentProps: {
+        movie: movie,
+      },
+      backdropDismiss: true,
+      showBackdrop: true,
+      cssClass: 'movie-details-modal',
+    });
+
+    await modal.present();
   }
 }

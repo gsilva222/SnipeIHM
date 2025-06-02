@@ -15,9 +15,18 @@
       <ion-icon [name]="getStarIcon()"></ion-icon>
       <span class="rating-text">{{ getRating() }}</span>
     </div>
-
-    <!-- Badge do tipo de conteúdo -->
-    <div class="media-type-badge">
+    <!-- Badge do tipo de conteúdo com ícone -->
+    <div
+      class="media-type-badge"
+      [ngClass]="getMediaTypeBadgeClass()"
+      [attr.aria-label]="'Tipo de conteúdo: ' + getMediaType()"
+      role="badge"
+    >
+      <ion-icon
+        [name]="getMediaTypeIcon()"
+        size="small"
+        aria-hidden="true"
+      ></ion-icon>
       {{ getMediaType() }}
     </div>
     <!-- Botão de favorito -->
@@ -50,6 +59,20 @@
 
     <!-- Informações básicas em linha -->
     <div class="compact-info">
+      <!-- Chip de tipo de mídia adicional -->
+      <div
+        class="info-chip media-type-chip"
+        [ngClass]="getMediaTypeBadgeClass()"
+        [attr.aria-label]="'Tipo: ' + getMediaType()"
+      >
+        <ion-icon
+          [name]="getMediaTypeIcon()"
+          size="small"
+          aria-hidden="true"
+        ></ion-icon>
+        <span>{{ getMediaType() }}</span>
+      </div>
+
       <!-- Rating -->
       <div class="info-chip rating-chip" *ngIf="movie.vote_average">
         <ion-icon name="star" size="small"></ion-icon>

@@ -41,7 +41,6 @@
         </ion-row>
       </ion-grid>
     </div>
-
     <!-- Filtros -->
     <div class="filters-container">
       <!-- Segmented control para tipo -->
@@ -61,24 +60,27 @@
         </ion-segment-button>
       </ion-segment>
 
-      <!-- Select de ordenação -->
-      <ion-item class="ordenacao-item">
-        <ion-label>{{ stringsService.get('ordenar_por') }}</ion-label>
-        <ion-select [(ngModel)]="ordenacao" (ionChange)="onOrdenacaoChanged()">
-          <ion-select-option value="data_adicionado"
-            >{{ stringsService.get('data_adicao') }}</ion-select-option
-          >
-          <ion-select-option value="alfabetica"
-            >{{ stringsService.get('alfabetica') }}</ion-select-option
-          >
-          <ion-select-option value="avaliacao"
-            >{{ stringsService.get('melhor_avaliacao') }}</ion-select-option
-          >
-          <ion-select-option value="ano"
-            >{{ stringsService.get('ano_lancamento') }}</ion-select-option
-          >
-        </ion-select>
-      </ion-item>
+      <!-- Chips de ordenação -->
+      <div class="filters-chips-container">
+        <!-- Chip de ordenação -->
+        <ion-chip
+          class="filter-chip ordenacao-chip"
+          [class.selected]="ordenacao"
+          (click)="openOrdenacaoActionSheet()"
+        >
+          <ion-label>{{ getOrdenacaoText() }}</ion-label>
+          <ion-icon name="chevron-down"></ion-icon>
+        </ion-chip>
+
+        <!-- Chip de direção (só aparece quando há ordenação selecionada) -->
+        <ion-chip
+          *ngIf="ordenacao"
+          class="filter-chip direction-chip"
+          (click)="toggleOrdenacaoDirection()"
+        >
+          <ion-icon [name]="getDirectionIcon()"></ion-icon>
+        </ion-chip>
+      </div>
     </div>
   </div>
 

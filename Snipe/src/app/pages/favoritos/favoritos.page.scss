@@ -27,8 +27,65 @@
   padding: 16px;
 }
 
-.filter-select {
-  margin-bottom: 12px;
+.filters-chips-container {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.filter-chip {
+  --background: var(--ion-color-light);
+  --color: var(--ion-color-dark);
+  border: 1px solid var(--ion-color-medium-tint);
+  transition: all 0.3s ease;
+  white-space: nowrap;
+  cursor: pointer;
+
+  &:hover {
+    --background: var(--ion-color-light-tint);
+    transform: translateY(-1px);
+  }
+
+  &.selected {
+    --background: var(--ion-color-primary);
+    --color: var(--ion-color-primary-contrast);
+    border-color: var(--ion-color-primary);
+  }
+
+  ion-icon {
+    margin-left: 4px;
+    font-size: 16px;
+  }
+}
+
+.direction-chip {
+  min-width: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  --background: var(--ion-color-secondary);
+  --color: var(--ion-color-secondary-contrast);
+  border-color: var(--ion-color-secondary);
+
+  ion-icon {
+    margin: 0;
+    font-size: 18px;
+  }
+
+  &:hover {
+    --background: var(--ion-color-secondary-shade);
+    transform: translateY(-1px);
+  }
 }
 
 .empty-state {
@@ -68,7 +125,62 @@
   .stats-card {
     margin: 12px;
   }
+
   .movies-grid {
     padding: 12px;
+  }
+
+  .filters-container {
+    padding: 12px;
+  }
+
+  .filters-chips-container {
+    gap: 6px;
+    margin-top: 8px;
+  }
+
+  .filter-chip {
+    font-size: 14px;
+
+    ion-label {
+      font-size: 14px;
+    }
+
+    ion-icon {
+      font-size: 14px;
+    }
+  }
+
+  .direction-chip {
+    min-width: 40px;
+
+    ion-icon {
+      font-size: 16px;
+    }
+  }
+}
+
+// Estilos para temas
+:host-context(.ios) {
+  .filter-chip {
+    border-radius: 20px;
+  }
+}
+
+:host-context(.md) {
+  .filter-chip {
+    border-radius: 16px;
+  }
+}
+
+// ActionSheet customização
+.ordenacao-action-sheet {
+  .action-sheet-button {
+    font-size: 16px;
+
+    &.action-sheet-cancel {
+      font-weight: 600;
+      color: var(--ion-color-danger);
+    }
   }
 }

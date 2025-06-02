@@ -383,6 +383,43 @@ export class FilmesService {
   }
 
   /**
+   * Determina o tipo de mídia baseado nos dados disponíveis
+   * @param movie - Objeto Movie
+   * @returns Tipo de mídia ('movie', 'tv', ou 'unknown')
+   */
+  getMediaTypeFromMovie(movie: Movie): string {
+    // Prioriza media_type se disponível
+    if (movie.media_type === 'movie' || movie.media_type === 'tv') {
+      return movie.media_type;
+    }
+
+    // Fallback baseado na presença de campos específicos
+    if (movie.title && !movie.name) return 'movie';
+    if (movie.name && !movie.title) return 'tv';
+    if (movie.first_air_date) return 'tv';
+    if (movie.release_date) return 'movie';
+
+    return 'unknown';
+  }
+
+  /**
+   * Obtém o texto formatado do tipo de mídia em português
+   * @param movie - Objeto Movie
+   * @returns Texto em português
+   */
+  getMediaTypeLabel(movie: Movie): string {
+    const mediaType = this.getMediaTypeFromMovie(movie);
+    switch (mediaType) {
+      case 'movie':
+        return 'Filme';
+      case 'tv':
+        return 'Série';
+      default:
+        return 'Conteúdo';
+    }
+  }
+
+  /**
    * Trata erros da API
    * @param error - Erro HTTP
    * @returns Observable com erro tratado

@@ -1,4 +1,11 @@
-import { Component, Input, OnInit, OnDestroy } from '@angular/core';
+import {
+  Component,
+  Input,
+  OnInit,
+  OnDestroy,
+  ChangeDetectorRef,
+  ChangeDetectionStrategy,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
   IonContent,
@@ -29,6 +36,9 @@ import {
   calendarOutline,
   checkmarkCircle,
   closeCircle,
+  filmOutline,
+  tvOutline,
+  playOutline,
 } from 'ionicons/icons';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
@@ -44,6 +54,7 @@ import { StringsService } from '../../services/strings.service';
   templateUrl: './movie-details-modal.component.html',
   styleUrls: ['./movie-details-modal.component.scss'],
   standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     CommonModule,
     IonContent,
@@ -70,11 +81,11 @@ export class MovieDetailsModalComponent implements OnInit, OnDestroy {
 
   /** Subject para gerir unsubscriptions */
   private destroy$ = new Subject<void>();
-
   constructor(
     private modalController: ModalController,
     private filmesService: FilmesService,
     private toastController: ToastController,
+    private cdr: ChangeDetectorRef,
     public stringsService: StringsService
   ) {
     addIcons({
@@ -88,6 +99,11 @@ export class MovieDetailsModalComponent implements OnInit, OnDestroy {
       libraryOutline,
       trendingUp,
       calendarOutline,
+      checkmarkCircle,
+      closeCircle,
+      filmOutline,
+      tvOutline,
+      playOutline,
     });
   }
 
@@ -108,18 +124,35 @@ export class MovieDetailsModalComponent implements OnInit, OnDestroy {
   async closeModal() {
     await this.modalController.dismiss();
   }
-
   /**
    * Verifica se o filme está nos favoritos
    */
   private async checkIfFavorite() {
     try {
       this.isFavorite = await this.filmesService.isFavorite(this.movie.id);
+      console.log(
+        'Estado favorito inicial:',
+        this.isFavorite,
+        'para filme:',
+        this.movie.id
+      );
+      this.cdr.detectChanges(); // Força detecção de mudanças
     } catch (error) {
       console.error('Erro ao verificar favorito:', error);
+      this.isFavorite = false;
+      this.cdr.detectChanges();
     }
   }
 
+  /**
+   * Atualiza o estado de favorito e força detecção de mudanças
+   */
+  private updateFavoriteState(newState: boolean) {
+    this.isFavorite = newState;
+    this.cdr.markForCheck();
+    this.cdr.detectChanges();
+    console.log('Estado atualizado para:', this.isFavorite);
+  }
   /**
    * Alterna estado de favorito
    */
@@ -128,14 +161,23 @@ export class MovieDetailsModalComponent implements OnInit, OnDestroy {
 
     this.isProcessingFavorite = true;
 
+    console.log(
+      'Estado antes de alterar:',
+      this.isFavorite,
+      'para filme:',
+      this.movie.id
+    );
+
     try {
       if (this.isFavorite) {
         await this.filmesService.removeFromFavorites(this.movie.id);
-        this.isFavorite = false;
+        this.updateFavoriteState(false);
+        console.log('Removido dos favoritos. Novo estado:', this.isFavorite);
         await this.showToast('Removido dos favoritos', 'danger');
       } else {
         await this.filmesService.addToFavorites(this.movie);
-        this.isFavorite = true;
+        this.updateFavoriteState(true);
+        console.log('Adicionado aos favoritos. Novo estado:', this.isFavorite);
         await this.showToast('Adicionado aos favoritos!', 'success');
       }
     } catch (error) {
@@ -143,6 +185,8 @@ export class MovieDetailsModalComponent implements OnInit, OnDestroy {
       await this.showToast('Erro ao alterar favorito', 'danger');
     } finally {
       this.isProcessingFavorite = false;
+      // Força detecção de mudanças novamente
+      this.cdr.detectChanges();
     }
   }
 
@@ -233,23 +277,56 @@ export class MovieDetailsModalComponent implements OnInit, OnDestroy {
       day: 'numeric',
     });
   }
-
   /**
    * Obtém tipo de mídia
    */
   getMediaType(): string {
-    if (this.movie.media_type === 'tv') return 'Série';
+    // Prioriza media_type se disponível
     if (this.movie.media_type === 'movie') return 'Filme';
-    return this.movie.title ? 'Filme' : 'Série';
+    if (this.movie.media_type === 'tv') return 'Série';
+
+    // Fallback baseado na presença de campos específicos
+    if (this.movie.title && !this.movie.name) return 'Filme';
+    if (this.movie.name && !this.movie.title) return 'Série';
+    if (this.movie.first_air_date) return 'Série';
+    if (this.movie.release_date) return 'Filme';
+
+    return 'Conteúdo';
   }
 
   /**
    * Obtém cor do tipo de mídia
    */
   getMediaTypeColor(): string {
-    return this.movie.media_type === 'tv' || !this.movie.title
-      ? 'secondary'
-      : 'primary';
+    // Prioriza media_type se disponível
+    if (this.movie.media_type === 'movie') return 'primary';
+    if (this.movie.media_type === 'tv') return 'secondary';
+
+    // Fallback baseado na presença de campos específicos
+    if (this.movie.title && !this.movie.name) return 'primary';
+    if (this.movie.name && !this.movie.title) return 'secondary';
+    if (this.movie.first_air_date) return 'secondary';
+    if (this.movie.release_date) return 'primary';
+
+    return 'medium';
+  }
+
+  /**
+   * Obtém o ícone apropriado para o tipo de mídia
+   * @returns Nome do ícone Ionicon
+   */
+  getMediaTypeIcon(): string {
+    // Prioriza media_type se disponível
+    if (this.movie.media_type === 'movie') return 'film-outline';
+    if (this.movie.media_type === 'tv') return 'tv-outline';
+
+    // Fallback baseado na presença de campos específicos
+    if (this.movie.title && !this.movie.name) return 'film-outline';
+    if (this.movie.name && !this.movie.title) return 'tv-outline';
+    if (this.movie.first_air_date) return 'tv-outline';
+    if (this.movie.release_date) return 'film-outline';
+
+    return 'play-outline';
   }
 
   /**
@@ -279,17 +356,9 @@ export class MovieDetailsModalComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Obtém data de adição aos favoritos formatada
+   * Re-verifica o estado de favoritos (útil para sincronização)
    */
-  getDateAdded(): string {
-    if (!this.movie.dataAdicionado) return '';
-
-    return new Date(this.movie.dataAdicionado).toLocaleDateString('pt-PT', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-    });
+  async refreshFavoriteStatus() {
+    await this.checkIfFavorite();
   }
 }
