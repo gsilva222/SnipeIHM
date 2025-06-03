@@ -39,6 +39,8 @@ import {
   arrowUp,
   arrowDown,
   swapVertical,
+  calendarOutline,
+  starOutline,
 } from 'ionicons/icons';
 
 import { FilmesService } from '../../services/filmes.service';
@@ -85,7 +87,6 @@ export class ResultadosPage implements OnInit {
 
   /** Termo de pesquisa atual */
   termoPesquisa: string = '';
-
   /** Género selecionado para filtro */
   generoSelecionado: string = '';
   /** Tipo de ordenação selecionado */
@@ -93,6 +94,12 @@ export class ResultadosPage implements OnInit {
 
   /** Direção da ordenação (asc/desc) */
   ordenacaoDirection: 'asc' | 'desc' = 'desc';
+
+  /** Filtros adicionais */
+  anoInicio: number = 0;
+  anoFim: number = 0;
+  avaliacaoMinima: number = 0;
+  tipoConteudo: 'all' | 'movie' | 'tv' = 'all';
 
   /** Página atual para paginação */
   paginaAtual: number = 1;
@@ -113,21 +120,22 @@ export class ResultadosPage implements OnInit {
     private toastController: ToastController
   ) {
     addIcons({
+      libraryOutline,
+      chevronDown,
+      calendarOutline,
+      starOutline,
+      filmOutline,
+      funnelOutline,
+      close,
+      search,
+      refresh,
       arrowBack,
       funnel,
-      search,
-      libraryOutline,
-      funnelOutline,
-      chevronDown,
-      close,
-      refresh,
-      filmOutline,
       arrowUp,
       arrowDown,
       swapVertical,
     });
   }
-
   /**
    * Inicialização do componente
    * Obtém parâmetros da rota e carrega resultados
@@ -137,8 +145,18 @@ export class ResultadosPage implements OnInit {
     this.route.queryParams.subscribe((params) => {
       this.termoPesquisa = params['query'] || '';
       this.generoSelecionado = params['genre'] || '';
+      this.anoInicio = parseInt(params['yearStart']) || 0;
+      this.anoFim = parseInt(params['yearEnd']) || 0;
+      this.avaliacaoMinima = parseFloat(params['minRating']) || 0;
+      this.tipoConteudo = params['contentType'] || 'all';
+      this.ordenacao = params['sort'] || '';
+      this.ordenacaoDirection = params['sortDirection'] || 'desc';
 
-      if (this.termoPesquisa || this.generoSelecionado) {
+      if (
+        this.termoPesquisa ||
+        this.generoSelecionado ||
+        this.hasActiveFilters()
+      ) {
         this.resetPesquisa();
         this.carregarResultados();
       }
@@ -184,23 +202,23 @@ export class ResultadosPage implements OnInit {
           .searchMovies(this.termoPesquisa, this.paginaAtual)
           .toPromise();
         resultados = response?.results || [];
-
-        // Aplicar ordenação local (a API do TMDB não suporta sort em search)
-        resultados = this.applySorting(resultados);
-      } else if (this.generoSelecionado) {
-        // Pesquisa por género
+      } else if (this.generoSelecionado || this.hasActiveFilters()) {
+        // Pesquisa por género ou filtros
         const response = await this.filmesService
           .searchByGenre(
-            parseInt(this.generoSelecionado),
-            'movie', // Pode ser 'movie' ou 'tv'
+            parseInt(this.generoSelecionado) || 0,
+            this.tipoConteudo === 'all' ? 'movie' : this.tipoConteudo,
             this.paginaAtual
           )
           .toPromise();
         resultados = response?.results || [];
-
-        // Aplicar ordenação local
-        resultados = this.applySorting(resultados);
       }
+
+      // Aplicar filtros locais
+      resultados = this.applyLocalFilters(resultados);
+
+      // Aplicar ordenação local
+      resultados = this.applySorting(resultados);
 
       if (resultados.length === 0) {
         this.hasMoreResults = false;
@@ -225,11 +243,7 @@ export class ResultadosPage implements OnInit {
       this.carregarResultados();
 
       // Atualizar URL
-      this.router.navigate([], {
-        relativeTo: this.route,
-        queryParams: { query: this.termoPesquisa, genre: null },
-        queryParamsHandling: 'merge',
-      });
+      this.updateUrlParams();
     }
   }
 
@@ -243,11 +257,7 @@ export class ResultadosPage implements OnInit {
       this.carregarResultados();
 
       // Atualizar URL
-      this.router.navigate([], {
-        relativeTo: this.route,
-        queryParams: { genre: this.generoSelecionado, query: null },
-        queryParamsHandling: 'merge',
-      });
+      this.updateUrlParams();
     }
   }
 
@@ -257,6 +267,78 @@ export class ResultadosPage implements OnInit {
   onOrdenacaoChanged() {
     this.resetPesquisa();
     this.carregarResultados();
+    this.updateUrlParams();
+  }
+
+  /**
+   * Verifica se há filtros ativos
+   */
+  hasActiveFilters(): boolean {
+    return (
+      this.anoInicio > 0 ||
+      this.anoFim > 0 ||
+      this.avaliacaoMinima > 0 ||
+      this.tipoConteudo !== 'all'
+    );
+  }
+
+  /**
+   * Aplica filtros locais aos resultados
+   */
+  private applyLocalFilters(movies: Movie[]): Movie[] {
+    return movies.filter((movie) => {
+      // Filtro de ano
+      if (this.anoInicio > 0 || this.anoFim > 0) {
+        const releaseDate = movie.release_date || movie.first_air_date;
+        if (releaseDate) {
+          const year = new Date(releaseDate).getFullYear();
+          if (this.anoInicio > 0 && year < this.anoInicio) return false;
+          if (this.anoFim > 0 && year > this.anoFim) return false;
+        }
+      }
+
+      // Filtro de avaliação mínima
+      if (
+        this.avaliacaoMinima > 0 &&
+        (movie.vote_average || 0) < this.avaliacaoMinima
+      ) {
+        return false;
+      }
+
+      // Filtro de tipo de conteúdo
+      if (this.tipoConteudo !== 'all') {
+        const isMovie = movie.title !== undefined;
+        const isTv = movie.name !== undefined;
+
+        if (this.tipoConteudo === 'movie' && !isMovie) return false;
+        if (this.tipoConteudo === 'tv' && !isTv) return false;
+      }
+
+      return true;
+    });
+  }
+
+  /**
+   * Atualiza os parâmetros da URL com os filtros atuais
+   */
+  private updateUrlParams() {
+    const queryParams: any = {};
+
+    if (this.termoPesquisa) queryParams.query = this.termoPesquisa;
+    if (this.generoSelecionado) queryParams.genre = this.generoSelecionado;
+    if (this.anoInicio > 0) queryParams.yearStart = this.anoInicio;
+    if (this.anoFim > 0) queryParams.yearEnd = this.anoFim;
+    if (this.avaliacaoMinima > 0) queryParams.minRating = this.avaliacaoMinima;
+    if (this.tipoConteudo !== 'all')
+      queryParams.contentType = this.tipoConteudo;
+    if (this.ordenacao) queryParams.sort = this.ordenacao;
+    if (this.ordenacao) queryParams.sortDirection = this.ordenacaoDirection;
+
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: queryParams,
+      queryParamsHandling: 'replace',
+    });
   }
 
   /**
@@ -370,6 +452,222 @@ export class ResultadosPage implements OnInit {
 
     await actionSheet.present();
   }
+
+  /**
+   * Abre modal para filtro de ano
+   */
+  async openYearModal() {
+    const currentYear = new Date().getFullYear();
+    const startYear = 1900;
+
+    const actionSheet = await this.actionSheetController.create({
+      header: 'Filtrar por Ano',
+      buttons: [
+        {
+          text: 'Últimos 5 anos',
+          handler: () => {
+            this.anoInicio = currentYear - 5;
+            this.anoFim = currentYear;
+            this.onFiltersChanged();
+          },
+        },
+        {
+          text: 'Última década (2010-' + currentYear + ')',
+          handler: () => {
+            this.anoInicio = 2010;
+            this.anoFim = currentYear;
+            this.onFiltersChanged();
+          },
+        },
+        {
+          text: 'Anos 2000-2009',
+          handler: () => {
+            this.anoInicio = 2000;
+            this.anoFim = 2009;
+            this.onFiltersChanged();
+          },
+        },
+        {
+          text: 'Anos 1990-1999',
+          handler: () => {
+            this.anoInicio = 1990;
+            this.anoFim = 1999;
+            this.onFiltersChanged();
+          },
+        },
+        {
+          text: 'Clássicos (antes de 1990)',
+          handler: () => {
+            this.anoInicio = startYear;
+            this.anoFim = 1989;
+            this.onFiltersChanged();
+          },
+        },
+        {
+          text: 'Remover filtro de ano',
+          handler: () => {
+            this.anoInicio = 0;
+            this.anoFim = 0;
+            this.onFiltersChanged();
+          },
+        },
+        {
+          text: 'Cancelar',
+          role: 'cancel',
+        },
+      ],
+      cssClass: 'year-action-sheet',
+    });
+
+    await actionSheet.present();
+  }
+
+  /**
+   * Abre modal para filtro de avaliação
+   */
+  async openRatingModal() {
+    const actionSheet = await this.actionSheetController.create({
+      header: 'Avaliação Mínima',
+      buttons: [
+        {
+          text: '9.0+ ⭐ Obras-primas',
+          handler: () => {
+            this.avaliacaoMinima = 9.0;
+            this.onFiltersChanged();
+          },
+        },
+        {
+          text: '8.0+ ⭐ Excelentes',
+          handler: () => {
+            this.avaliacaoMinima = 8.0;
+            this.onFiltersChanged();
+          },
+        },
+        {
+          text: '7.0+ ⭐ Muito bons',
+          handler: () => {
+            this.avaliacaoMinima = 7.0;
+            this.onFiltersChanged();
+          },
+        },
+        {
+          text: '6.0+ ⭐ Bons',
+          handler: () => {
+            this.avaliacaoMinima = 6.0;
+            this.onFiltersChanged();
+          },
+        },
+        {
+          text: '5.0+ ⭐ Médios',
+          handler: () => {
+            this.avaliacaoMinima = 5.0;
+            this.onFiltersChanged();
+          },
+        },
+        {
+          text: 'Remover filtro de avaliação',
+          handler: () => {
+            this.avaliacaoMinima = 0;
+            this.onFiltersChanged();
+          },
+        },
+        {
+          text: 'Cancelar',
+          role: 'cancel',
+        },
+      ],
+      cssClass: 'rating-action-sheet',
+    });
+
+    await actionSheet.present();
+  }
+
+  /**
+   * Abre modal para filtro de tipo de conteúdo
+   */
+  async openContentTypeModal() {
+    const actionSheet = await this.actionSheetController.create({
+      header: 'Tipo de Conteúdo',
+      buttons: [
+        {
+          text: 'Todos',
+          handler: () => {
+            this.tipoConteudo = 'all';
+            this.onFiltersChanged();
+          },
+        },
+        {
+          text: 'Filmes',
+          handler: () => {
+            this.tipoConteudo = 'movie';
+            this.onFiltersChanged();
+          },
+        },
+        {
+          text: 'Séries',
+          handler: () => {
+            this.tipoConteudo = 'tv';
+            this.onFiltersChanged();
+          },
+        },
+        {
+          text: 'Cancelar',
+          role: 'cancel',
+        },
+      ],
+      cssClass: 'content-type-action-sheet',
+    });
+
+    await actionSheet.present();
+  }
+
+  /**
+   * Callback quando os filtros são alterados
+   */
+  onFiltersChanged() {
+    this.resetPesquisa();
+    this.carregarResultados();
+    this.updateUrlParams();
+  }
+
+  /**
+   * Obtém o texto do filtro de ano
+   */
+  getYearFilterText(): string {
+    if (this.anoInicio > 0 || this.anoFim > 0) {
+      if (this.anoInicio > 0 && this.anoFim > 0) {
+        return `${this.anoInicio}-${this.anoFim}`;
+      } else if (this.anoInicio > 0) {
+        return `Após ${this.anoInicio}`;
+      } else {
+        return `Até ${this.anoFim}`;
+      }
+    }
+    return 'Ano';
+  }
+
+  /**
+   * Obtém o texto do filtro de avaliação
+   */
+  getRatingFilterText(): string {
+    if (this.avaliacaoMinima > 0) {
+      return `${this.avaliacaoMinima.toFixed(1)}+ ⭐`;
+    }
+    return 'Avaliação';
+  }
+  /**
+   * Obtém o texto do filtro de tipo de conteúdo
+   */
+  getContentTypeText(): string {
+    switch (this.tipoConteudo) {
+      case 'movie':
+        return 'Filmes';
+      case 'tv':
+        return 'Séries';
+      default:
+        return 'Tipo';
+    }
+  }
   /**
    * Limpa todos os filtros
    */
@@ -378,9 +676,14 @@ export class ResultadosPage implements OnInit {
     this.ordenacao = '';
     this.ordenacaoDirection = 'desc';
     this.termoPesquisa = '';
+    this.anoInicio = 0;
+    this.anoFim = 0;
+    this.avaliacaoMinima = 0;
+    this.tipoConteudo = 'all';
     this.filmes = [];
     this.paginaAtual = 1;
     this.hasMoreResults = true;
+    this.updateUrlParams();
   }
   /**
    * Obtém o label da ordenação atual

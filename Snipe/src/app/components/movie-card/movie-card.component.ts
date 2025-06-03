@@ -242,27 +242,39 @@ export class MovieCardComponent implements OnInit, OnDestroy {
   getRating(): string {
     return this.movie.vote_average ? this.movie.vote_average.toFixed(1) : '0.0';
   }
-
   /**
    * Obtém o ícone de estrelas baseado na classificação
    * @returns Nome do ícone Ionicon
    */
   getStarIcon(): string {
     const rating = this.movie.vote_average || 0;
-    if (rating >= 8) return 'star';
-    if (rating >= 6) return 'star-half';
-    return 'star-outline';
-  }
 
+    // Sistema de estrelas mais preciso
+    if (rating >= 9) return 'star'; // Excelente
+    if (rating >= 8) return 'star'; // Muito bom
+    if (rating >= 7) return 'star'; // Bom
+    if (rating >= 6) return 'star-half'; // Razoável
+    if (rating >= 4) return 'star-half'; // Médio
+    if (rating >= 2) return 'star-outline'; // Fraco
+
+    return 'star-outline'; // Muito fraco ou sem avaliação
+  }
   /**
    * Obtém a cor da classificação baseada no valor
    * @returns Classe CSS para a cor
    */
   getRatingColor(): string {
     const rating = this.movie.vote_average || 0;
-    if (rating >= 8) return 'rating-high';
-    if (rating >= 6) return 'rating-medium';
-    return 'rating-low';
+
+    // Sistema de cores mais detalhado
+    if (rating >= 9) return 'rating-excellent'; // Verde escuro para excelente
+    if (rating >= 8) return 'rating-high'; // Verde para muito bom
+    if (rating >= 7) return 'rating-good'; // Amarelo/dourado para bom
+    if (rating >= 6) return 'rating-medium'; // Laranja para razoável
+    if (rating >= 4) return 'rating-low'; // Vermelho claro para médio
+    if (rating >= 2) return 'rating-poor'; // Vermelho para fraco
+
+    return 'rating-none'; // Cinza para sem avaliação
   }
 
   /**

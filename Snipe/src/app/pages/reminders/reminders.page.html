@@ -1,0 +1,266 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title>
+      <ion-icon name="alarm-outline" style="margin-right: 8px"></ion-icon>
+      Lembretes de Filmes
+    </ion-title>
+    <ion-buttons slot="end">
+      <ion-button fill="clear" (click)="toggleViewMode()">
+        <ion-icon
+          [name]="viewMode === 'list' ? 'grid-outline' : 'list-outline'"
+          slot="icon-only"
+        ></ion-icon>
+      </ion-button>
+      <ion-button fill="clear" (click)="openNotificationSettings()">
+        <ion-icon name="settings-outline" slot="icon-only"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <!-- Refresher -->
+  <ion-refresher slot="fixed" (ionRefresh)="handleRefresh($event)">
+    <ion-refresher-content
+      pullingIcon="chevron-down"
+      pullingText="Puxe para atualizar"
+      refreshingSpinner="circular"
+      refreshingText="Atualizando..."
+    >
+    </ion-refresher-content>
+  </ion-refresher>
+
+  <!-- Header da página -->
+  <ion-header collapse="condense">
+    <ion-toolbar>
+      <ion-title size="large">Lembretes</ion-title>
+    </ion-toolbar>
+  </ion-header>
+
+  <!-- Barra de pesquisa -->
+  <div class="search-container">
+    <ion-searchbar
+      [(ngModel)]="searchTerm"
+      (ionInput)="onSearchChange($event)"
+      placeholder="Buscar lembretes..."
+      show-clear-button="focus"
+      debounce="300"
+    >
+    </ion-searchbar>
+  </div>
+
+  <!-- Segmentos de filtro -->
+  <div class="segments-container">
+    <ion-segment
+      [(ngModel)]="selectedSegment"
+      (ionChange)="onSegmentChange($event)"
+      value="all"
+    >
+      <ion-segment-button value="all">
+        <ion-label>
+          Todos
+          <ion-badge color="primary" *ngIf="reminders.length > 0"
+            >{{ reminders.length }}</ion-badge
+          >
+        </ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="today">
+        <ion-label>
+          Hoje
+          <ion-badge color="warning" *ngIf="getTodayCount() > 0"
+            >{{ getTodayCount() }}</ion-badge
+          >
+        </ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="upcoming">
+        <ion-label>
+          Próximos
+          <ion-badge color="success" *ngIf="getUpcomingCount() > 0"
+            >{{ getUpcomingCount() }}</ion-badge
+          >
+        </ion-label>
+      </ion-segment-button>
+    </ion-segment>
+  </div>
+
+  <!-- Botões de ação rápida -->
+  <div class="quick-actions" *ngIf="reminders.length > 0">
+    <ion-button fill="outline" size="small" (click)="testNotification()">
+      <ion-icon name="notifications-outline" slot="start"></ion-icon>
+      Testar Notificação
+    </ion-button>
+    <ion-button
+      fill="outline"
+      size="small"
+      color="danger"
+      (click)="clearAllReminders()"
+    >
+      <ion-icon name="trash-outline" slot="start"></ion-icon>
+      Limpar Todos
+    </ion-button>
+  </div>
+
+  <!-- Lista/Grid de lembretes -->
+  <div class="reminders-container" [ngClass]="viewMode">
+    <!-- Lista vazia -->
+    <div
+      class="empty-state"
+      *ngIf="filteredReminders.length === 0 && !searchTerm"
+    >
+      <ion-icon name="alarm-outline" class="empty-icon"></ion-icon>
+      <h2>Nenhum lembrete criado</h2>
+      <p>Toque no botão + para criar seu primeiro lembrete de filme!</p>
+      <ion-button fill="solid" (click)="openCreateReminderModal()">
+        <ion-icon name="add" slot="start"></ion-icon>
+        Criar Primeiro Lembrete
+      </ion-button>
+    </div>
+
+    <!-- Sem resultados de busca -->
+    <div
+      class="empty-state"
+      *ngIf="filteredReminders.length === 0 && searchTerm"
+    >
+      <ion-icon name="search-outline" class="empty-icon"></ion-icon>
+      <h2>Nenhum resultado encontrado</h2>
+      <p>Tente buscar por outro termo ou filme.</p>
+    </div>
+
+    <!-- Lista de lembretes -->
+    <div *ngIf="filteredReminders.length > 0">
+      <!-- Modo Lista -->
+      <ion-list *ngIf="viewMode === 'list'" class="reminders-list">
+        <ion-item-sliding
+          *ngFor="let reminder of filteredReminders; trackBy: trackByReminderId"
+        >
+          <ion-item class="reminder-item" (click)="editReminder(reminder)">
+            <!-- Avatar com poster do filme -->
+            <ion-avatar slot="start" class="movie-avatar">
+              <img
+                [src]="reminder.moviePoster || 'assets/icon/default-movie.png'"
+                [alt]="reminder.movieTitle"
+                loading="lazy"
+              />
+              <div class="media-type-overlay">
+                <ion-icon
+                  [name]="getMediaTypeIcon(reminder)"
+                  size="small"
+                ></ion-icon>
+              </div>
+            </ion-avatar>
+
+            <!-- Conteúdo principal -->
+            <ion-label class="reminder-content">
+              <h2 class="movie-title">{{ reminder.movieTitle }}</h2>
+              <p class="reminder-message">{{ reminder.message }}</p>
+              <div class="reminder-details">
+                <ion-chip
+                  [color]="getReminderStatusColor(reminder)"
+                  outline="true"
+                  class="time-chip"
+                >
+                  <ion-icon name="time-outline" size="small"></ion-icon>
+                  <ion-label>{{ getTimeUntilReminder(reminder) }}</ion-label>
+                </ion-chip>
+                <span class="reminder-date"
+                  >{{ getFormattedReminderDate(reminder) }}</span
+                >
+              </div>
+            </ion-label>
+
+            <!-- Status badge -->
+            <ion-badge
+              slot="end"
+              [color]="getReminderStatusColor(reminder)"
+              class="status-badge"
+            >
+              <ion-icon name="alarm-outline" size="small"></ion-icon>
+            </ion-badge>
+          </ion-item>
+
+          <!-- Opções de deslizar -->
+          <ion-item-options side="end">
+            <ion-item-option color="primary" (click)="editReminder(reminder)">
+              <ion-icon name="create-outline" slot="icon-only"></ion-icon>
+            </ion-item-option>
+            <ion-item-option color="danger" (click)="deleteReminder(reminder)">
+              <ion-icon name="trash-outline" slot="icon-only"></ion-icon>
+            </ion-item-option>
+          </ion-item-options>
+        </ion-item-sliding>
+      </ion-list>
+
+      <!-- Modo Grid -->
+      <div *ngIf="viewMode === 'grid'" class="reminders-grid">
+        <ion-card
+          *ngFor="let reminder of filteredReminders; trackBy: trackByReminderId"
+          class="reminder-card"
+          (click)="editReminder(reminder)"
+        >
+          <!-- Header do card com poster -->
+          <div class="card-header">
+            <img
+              [src]="reminder.moviePoster || 'assets/icon/default-movie.png'"
+              [alt]="reminder.movieTitle"
+              class="movie-poster"
+              loading="lazy"
+            />
+            <div class="overlay-content">
+              <ion-badge
+                [color]="getReminderStatusColor(reminder)"
+                class="status-badge"
+              >
+                {{ getTimeUntilReminder(reminder) }}
+              </ion-badge>
+              <div class="media-type-icon">
+                <ion-icon [name]="getMediaTypeIcon(reminder)"></ion-icon>
+              </div>
+            </div>
+          </div>
+
+          <!-- Conteúdo do card -->
+          <ion-card-content class="card-content">
+            <ion-card-title class="movie-title"
+              >{{ reminder.movieTitle }}</ion-card-title
+            >
+            <p class="reminder-message">{{ reminder.message }}</p>
+
+            <!-- Detalhes do lembrete -->
+            <div class="reminder-details">
+              <div class="detail-row">
+                <ion-icon name="calendar-outline" size="small"></ion-icon>
+                <span>{{ getFormattedReminderDate(reminder) }}</span>
+              </div>
+            </div>
+
+            <!-- Ações do card -->
+            <div class="card-actions">
+              <ion-button
+                fill="clear"
+                size="small"
+                (click)="editReminder(reminder); $event.stopPropagation()"
+              >
+                <ion-icon name="create-outline" slot="icon-only"></ion-icon>
+              </ion-button>
+              <ion-button
+                fill="clear"
+                size="small"
+                color="danger"
+                (click)="deleteReminder(reminder); $event.stopPropagation()"
+              >
+                <ion-icon name="trash-outline" slot="icon-only"></ion-icon>
+              </ion-button>
+            </div>
+          </ion-card-content>
+        </ion-card>
+      </div>
+    </div>
+  </div>
+
+  <!-- FAB para adicionar lembrete -->
+  <ion-fab vertical="bottom" horizontal="end" slot="fixed">
+    <ion-fab-button (click)="openCreateReminderModal()" color="primary">
+      <ion-icon name="add"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+</ion-content>

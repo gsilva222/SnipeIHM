@@ -53,7 +53,6 @@ import { MovieDetailsModalComponent } from '../../components/movie-details-modal
     IonIcon,
     IonSpinner,
     CommonModule,
-    MovieCardComponent,
   ],
 })
 export class HomePage implements OnInit, OnDestroy {

@@ -153,9 +153,8 @@ export class FilmesService {
       catchError(this.handleError)
     );
   }
-
   /**
-   * Obtém séries populares
+   * Obtém séries populares (excluindo Talk Shows)
    * @param page - Página (padrão: 1)
    * @returns Observable com séries populares
    */
@@ -165,6 +164,7 @@ export class FilmesService {
       api_key: this.API_KEY,
       page: page.toString(),
       language: 'pt-PT',
+      without_genres: '10767', // Exclui Talk Shows (ID 10767 no TMDb)
     };
 
     return this.http.get<TMDbResponse>(url, { params }).pipe(

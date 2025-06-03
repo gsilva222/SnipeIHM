@@ -41,16 +41,21 @@ export const routes: Routes = [
       import('./pages/favoritos/favoritos.page').then((m) => m.FavoritosPage),
   },
   {
+    path: 'reminders',
+    loadComponent: () =>
+      import('./pages/reminders/reminders.page').then((m) => m.RemindersPage),
+  },
+  {
     path: '**',
     redirectTo: '/tabs/home',
     pathMatch: 'full',
   },
-   {
+  {
     path: 'logo',
     loadComponent: () =>
       import('./pages/logo/logo.page').then((m) => m.LogoPage),
   },
-    {
+  {
     path: 'login',
     loadComponent: () =>
       import('./pages/signin/login.page').then((m) => m.LoginPage),

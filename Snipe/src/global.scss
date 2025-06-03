@@ -121,3 +121,41 @@ ion-card {
     }
   }
 }
+
+// Header Logo Styles
+.header-logo {
+  height: 88px;
+  width: auto;
+  max-width: 320px;
+  object-fit: contain;
+}
+
+// Specific styles for pages with navigation buttons
+ion-toolbar ion-title {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+
+  .header-logo {
+    margin-left: 8px;
+  }
+}
+
+// For home page specifically (no back button)
+.snipe-header ion-title {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+
+  .header-logo {
+    margin-left: 0;
+  }
+}
+
+// Responsive adjustments for mobile
+@media (max-width: 767px) {
+  .header-logo {
+    height: 72px;
+    max-width: 260px;
+  }
+}

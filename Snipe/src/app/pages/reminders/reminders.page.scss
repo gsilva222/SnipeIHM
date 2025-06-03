@@ -1,0 +1,537 @@
+// Página de Lembretes - Snipe
+.search-container {
+  padding: 8px 16px;
+  background: var(--ion-background-color);
+}
+
+.segments-container {
+  padding: 8px 16px;
+  background: var(--ion-background-color);
+  border-bottom: 1px solid var(--ion-color-step-200);
+
+  ion-segment {
+    --background: var(--ion-color-step-150);
+    --color: var(--ion-text-color);
+    --color-checked: var(--ion-color-primary-contrast);
+    --indicator-color: var(--ion-color-primary);
+    border-radius: 12px;
+    overflow: hidden;
+
+    ion-segment-button {
+      --padding-top: 8px;
+      --padding-bottom: 8px;
+      --border-radius: 8px;
+      --color: var(--ion-text-color);
+      --color-selected: var(--ion-color-primary-contrast);
+      min-height: 40px;
+
+      ion-label {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 2px;
+        font-size: 12px;
+        font-weight: 500;
+        color: inherit;
+
+        ion-badge {
+          font-size: 9px;
+          --padding-top: 2px;
+          --padding-bottom: 2px;
+          --padding-start: 6px;
+          --padding-end: 6px;
+          min-width: 16px;
+          height: 16px;
+          --background: var(--ion-color-primary);
+          --color: var(--ion-color-primary-contrast);
+        }
+      }
+    }
+  }
+}
+
+.quick-actions {
+  display: flex;
+  gap: 8px;
+  padding: 12px 16px;
+  justify-content: center;
+  background: var(--ion-color-step-50);
+
+  ion-button {
+    --border-radius: 20px;
+    font-size: 11px;
+    height: 32px;
+  }
+}
+
+.reminders-container {
+  padding: 8px 16px;
+
+  &.list {
+    padding: 0;
+  }
+
+  &.grid {
+    padding: 8px;
+  }
+}
+
+// Estados vazios
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 40px;
+  text-align: center;
+  min-height: 50vh;
+
+  .empty-icon {
+    font-size: 80px;
+    color: var(--ion-color-medium);
+    margin-bottom: 24px;
+    opacity: 0.6;
+  }
+
+  h2 {
+    font-size: 24px;
+    font-weight: 600;
+    margin: 0 0 16px 0;
+    color: var(--ion-text-color);
+  }
+
+  p {
+    font-size: 16px;
+    color: var(--ion-color-medium);
+    margin: 0 0 32px 0;
+    line-height: 1.5;
+    max-width: 280px;
+  }
+
+  ion-button {
+    --border-radius: 24px;
+    --padding-top: 12px;
+    --padding-bottom: 12px;
+    --padding-start: 24px;
+    --padding-end: 24px;
+    font-weight: 600;
+  }
+}
+
+// Modo Lista
+.reminders-list {
+  background: transparent;
+
+  .reminder-item {
+    --padding-start: 16px;
+    --padding-end: 16px;
+    --inner-padding-end: 0;
+    margin: 8px 16px;
+    border-radius: 12px;
+    background: var(--ion-color-step-50);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+    }
+
+    .movie-avatar {
+      position: relative;
+      width: 56px;
+      height: 80px;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+
+      img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      .media-type-overlay {
+        position: absolute;
+        top: 4px;
+        left: 4px;
+        background: rgba(0, 0, 0, 0.7);
+        border-radius: 4px;
+        padding: 2px 4px;
+
+        ion-icon {
+          color: white;
+          font-size: 10px;
+        }
+      }
+    }
+    .reminder-content {
+      margin-left: 16px;
+
+      .movie-title {
+        font-size: 16px;
+        font-weight: 600;
+        margin: 0 0 4px 0;
+        color: var(--ion-text-color);
+        display: -webkit-box;
+        -webkit-line-clamp: 1;
+        line-clamp: 1;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+      }
+
+      .reminder-date {
+        font-size: 14px;
+        color: var(--ion-color-medium);
+        margin: 0 0 4px 0;
+        font-weight: 500;
+      }
+      .reminder-message {
+        font-size: 13px;
+        color: white;
+        font-weight: 500;
+        margin: 0;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        line-height: 1.4;
+      }
+
+      .reminder-status {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-top: 8px;
+
+        ion-chip {
+          --background: var(--ion-color-success);
+          --color: var(--ion-color-success-contrast);
+          font-size: 11px;
+          height: 24px;
+
+          &.upcoming {
+            --background: var(--ion-color-warning);
+            --color: var(--ion-color-warning-contrast);
+          }
+
+          &.overdue {
+            --background: var(--ion-color-danger);
+            --color: var(--ion-color-danger-contrast);
+          }
+        }
+      }
+    }
+    .reminder-message {
+      font-size: 14px;
+      color: var(--ion-text-color);
+      font-weight: 500;
+      margin: 0 0 8px 0;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      line-height: 1.4;
+    }
+
+    .reminder-details {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+
+      .time-chip {
+        align-self: flex-start;
+        height: 24px;
+        font-size: 11px;
+        font-weight: 600;
+
+        ion-icon {
+          margin-right: 4px;
+        }
+      }
+      .reminder-date {
+        font-size: 12px;
+        color: var(--ion-color-medium);
+        font-weight: 500;
+      }
+    }
+
+    .status-badge {
+      align-self: flex-start;
+      margin-top: 8px;
+      height: 24px;
+      font-size: 10px;
+      font-weight: 600;
+
+      ion-icon {
+        margin-right: 2px;
+      }
+    }
+  }
+}
+
+// Modo Grid
+.reminders-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 16px;
+  padding: 8px;
+
+  .reminder-card {
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    background: var(--ion-color-step-50);
+    margin: 0;
+
+    &:hover {
+      transform: translateY(-4px) scale(1.02);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+    }
+
+    .card-header {
+      position: relative;
+      height: 160px;
+      overflow: hidden;
+
+      .movie-poster {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      .overlay-content {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(
+          to bottom,
+          rgba(0, 0, 0, 0.3) 0%,
+          transparent 30%,
+          transparent 70%,
+          rgba(0, 0, 0, 0.5) 100%
+        );
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        padding: 12px;
+
+        .status-badge {
+          font-size: 10px;
+          font-weight: 700;
+          height: 20px;
+          backdrop-filter: blur(8px);
+          border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .media-type-icon {
+          background: rgba(0, 0, 0, 0.7);
+          border-radius: 6px;
+          padding: 4px;
+          backdrop-filter: blur(4px);
+
+          ion-icon {
+            color: white;
+            font-size: 16px;
+          }
+        }
+      }
+    }
+
+    .card-content {
+      padding: 16px;
+
+      .movie-title {
+        font-size: 16px;
+        font-weight: 600;
+        margin: 0 0 8px 0;
+        color: var(--ion-text-color);
+        display: -webkit-box;
+        -webkit-line-clamp: 1;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+      }
+      .reminder-message {
+        font-size: 14px;
+        color: white;
+        font-weight: 500;
+        margin: 0 0 12px 0;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        line-height: 1.4;
+      }
+
+      .reminder-details {
+        margin-bottom: 12px;
+
+        .detail-row {
+          display: flex;
+          align-items: center;
+          gap: 6px;
+          font-size: 12px;
+          color: var(--ion-color-medium);
+          margin-bottom: 4px;
+
+          ion-icon {
+            color: var(--ion-color-primary);
+          }
+        }
+      }
+
+      .card-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 8px;
+        border-top: 1px solid var(--ion-color-step-100);
+        padding-top: 12px;
+        margin-top: 12px;
+
+        ion-button {
+          --border-radius: 8px;
+          height: 32px;
+          width: 32px;
+        }
+      }
+    }
+  }
+}
+
+// Responsividade
+@media (max-width: 768px) {
+  .segments-container {
+    padding: 8px 8px;
+
+    ion-segment ion-segment-button ion-label {
+      font-size: 11px;
+
+      ion-badge {
+        font-size: 8px;
+        min-width: 14px;
+        height: 14px;
+      }
+    }
+  }
+
+  .quick-actions {
+    padding: 8px;
+    gap: 6px;
+
+    ion-button {
+      font-size: 10px;
+      height: 28px;
+      --padding-start: 8px;
+      --padding-end: 8px;
+    }
+  }
+
+  .reminders-grid {
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 12px;
+    padding: 4px;
+
+    .reminder-card .card-header {
+      height: 140px;
+    }
+  }
+
+  .empty-state {
+    padding: 40px 20px;
+    min-height: 40vh;
+
+    .empty-icon {
+      font-size: 60px;
+      margin-bottom: 16px;
+    }
+
+    h2 {
+      font-size: 20px;
+    }
+
+    p {
+      font-size: 14px;
+      max-width: 240px;
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .reminders-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .reminders-list .reminder-item {
+    margin: 6px 8px;
+
+    .movie-avatar {
+      width: 48px;
+      height: 68px;
+    }
+
+    .reminder-content {
+      margin-left: 12px;
+
+      .movie-title {
+        font-size: 15px;
+      }
+      .reminder-message {
+        font-size: 13px;
+        color: var(--ion-text-color);
+        font-weight: 500;
+      }
+    }
+  }
+}
+
+// Animações
+@keyframes slideInUp {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.reminders-list .reminder-item,
+.reminders-grid .reminder-card {
+  animation: slideInUp 0.3s ease-out;
+}
+
+// FAB customizado
+ion-fab-button {
+  --background: var(--ion-color-primary);
+  --border-radius: 16px;
+  --box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+  width: 56px;
+  height: 56px;
+
+  &:hover {
+    --box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+    transform: scale(1.05);
+  }
+}
+
+// Melhorias no item sliding
+ion-item-sliding {
+  .item-sliding-active-slide .reminder-item {
+    transform: scale(0.98);
+  }
+}
+
+ion-item-options {
+  ion-item-option {
+    --border-radius: 8px;
+    margin: 4px;
+    height: calc(100% - 8px);
+  }
+}

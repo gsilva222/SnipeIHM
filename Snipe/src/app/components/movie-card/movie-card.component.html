@@ -72,10 +72,13 @@
         ></ion-icon>
         <span>{{ getMediaType() }}</span>
       </div>
-
       <!-- Rating -->
-      <div class="info-chip rating-chip" *ngIf="movie.vote_average">
-        <ion-icon name="star" size="small"></ion-icon>
+      <div
+        class="info-chip rating-chip"
+        [ngClass]="getRatingColor()"
+        *ngIf="movie.vote_average"
+      >
+        <ion-icon [name]="getStarIcon()" size="small"></ion-icon>
         <span>{{ getRating() }}</span>
       </div>
 

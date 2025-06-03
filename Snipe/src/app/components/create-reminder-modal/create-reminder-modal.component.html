@@ -1,0 +1,249 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title>
+      <ion-icon name="film-outline" style="margin-right: 8px"></ion-icon>
+      {{ isEditing ? "Editar Lembrete" : "Novo Lembrete" }}
+    </ion-title>
+    <ion-buttons slot="end">
+      <ion-button fill="clear" (click)="closeModal()">
+        <ion-icon name="close" slot="icon-only"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <form [formGroup]="reminderForm" (ngSubmit)="saveReminder()">
+    <!-- Permissões de Notificação -->
+    <ion-card *ngIf="!notificationPermission" class="permission-card">
+      <ion-card-header>
+        <ion-card-title>
+          <ion-icon name="notifications-outline"></ion-icon>
+          Permissões Necessárias
+        </ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <p>Para criar lembretes, você precisa permitir notificações.</p>
+        <ion-button
+          expand="block"
+          fill="solid"
+          (click)="requestNotificationPermission()"
+        >
+          <ion-icon name="checkmark-circle" slot="start"></ion-icon>
+          Permitir Notificações
+        </ion-button>
+      </ion-card-content>
+    </ion-card>
+
+    <!-- Informações do Filme -->
+    <ion-card class="movie-info-card">
+      <ion-card-header>
+        <ion-card-title>Informações do Filme</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <!-- Poster e Título -->
+        <div
+          class="movie-preview"
+          *ngIf="reminderForm.get('movieTitle')?.value"
+        >
+          <ion-avatar
+            class="movie-avatar"
+            *ngIf="reminderForm.get('moviePoster')?.value"
+          >
+            <img
+              [src]="reminderForm.get('moviePoster')?.value"
+              [alt]="reminderForm.get('movieTitle')?.value"
+            />
+          </ion-avatar>
+          <div class="movie-details">
+            <h3>{{ reminderForm.get("movieTitle")?.value }}</h3>
+            <ion-chip color="primary" outline="true">
+              <ion-icon name="film-outline"></ion-icon>
+              <ion-label>Filme</ion-label>
+            </ion-chip>
+          </div>
+        </div>
+        <!-- Seleção de Filme dos Favoritos -->
+        <ion-item *ngIf="!isEditing">
+          <ion-label position="stacked"
+            >Selecionar Filme dos Favoritos</ion-label
+          >
+          <ion-button
+            fill="outline"
+            expand="block"
+            (click)="toggleMovieSearch()"
+            [disabled]="favoriteMovies.length === 0"
+          >
+            <ion-icon name="search-outline" slot="start"></ion-icon>
+            {{
+              favoriteMovies.length === 0
+                ? "Nenhum favorito encontrado"
+                : "Escolher dos Favoritos"
+            }}
+          </ion-button>
+        </ion-item>
+
+        <!-- Lista de Filmes Favoritos -->
+        <div
+          *ngIf="showMovieSearch && favoriteMovies.length > 0"
+          class="movie-search-container"
+        >
+          <ion-item>
+            <ion-label position="stacked">Buscar Filme</ion-label>
+            <ion-input
+              placeholder="Digite para filtrar..."
+              (ionInput)="filterMovies($event)"
+            ></ion-input>
+          </ion-item>
+
+          <div class="movie-list">
+            <ion-item
+              *ngFor="let movie of filteredMovies.slice(0, 5)"
+              button
+              (click)="selectMovie(movie)"
+              class="movie-item"
+            >
+              <ion-avatar slot="start" *ngIf="movie.poster_path">
+                <img
+                  [src]="'https://image.tmdb.org/t/p/w200' + movie.poster_path"
+                  [alt]="movie.title"
+                />
+              </ion-avatar>
+              <ion-label>
+                <h3>{{ movie.title || movie.original_title }}</h3>
+                <p *ngIf="movie.release_date">
+                  {{ movie.release_date | date : "yyyy" }}
+                </p>
+              </ion-label>
+            </ion-item>
+          </div>
+        </div>
+
+        <!-- Campo Título (somente leitura quando selecionado dos favoritos) -->
+        <ion-item>
+          <ion-label position="stacked">Título do Filme *</ion-label>
+          <ion-input
+            formControlName="movieTitle"
+            placeholder="Selecione um filme dos favoritos ou digite o título"
+            [class.ion-invalid]="movieTitle?.invalid && movieTitle?.touched"
+            [readonly]="
+              !isEditing &&
+              reminderForm.get('movieTitle')?.value &&
+              reminderForm.get('moviePoster')?.value
+            "
+          >
+          </ion-input>
+        </ion-item>
+      </ion-card-content>
+    </ion-card>
+
+    <!-- Data e Hora do Lembrete -->
+    <ion-card class="datetime-card">
+      <ion-card-header>
+        <ion-card-title>
+          <ion-icon name="calendar-outline"></ion-icon>
+          Quando Lembrar
+        </ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <!-- Data -->
+        <ion-item>
+          <ion-label position="stacked">Data *</ion-label>
+          <ion-datetime
+            formControlName="reminderDate"
+            presentation="date"
+            [min]="minDate"
+            [class.ion-invalid]="reminderDate?.invalid && reminderDate?.touched"
+          >
+          </ion-datetime>
+        </ion-item>
+
+        <!-- Hora -->
+        <ion-item>
+          <ion-label position="stacked">Hora *</ion-label>
+          <ion-datetime
+            formControlName="reminderTime"
+            presentation="time"
+            [class.ion-invalid]="reminderTime?.invalid && reminderTime?.touched"
+          >
+          </ion-datetime>
+        </ion-item>
+      </ion-card-content>
+    </ion-card>
+
+    <!-- Mensagem Personalizada -->
+    <ion-card class="message-card">
+      <ion-card-header>
+        <ion-card-title>Mensagem do Lembrete</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <!-- Opções de Mensagem Rápida -->
+        <div
+          class="quick-messages"
+          *ngIf="!reminderForm.get('customMessage')?.value"
+        >
+          <ion-label>Mensagens Sugeridas:</ion-label>
+          <div class="message-options">
+            <ion-item
+              *ngFor="let msg of quickMessages"
+              button
+              (click)="setQuickMessage(msg)"
+              class="message-option"
+            >
+              <ion-label>{{ msg }}</ion-label>
+            </ion-item>
+          </div>
+        </div>
+
+        <!-- Campo de Mensagem Personalizada -->
+        <ion-item>
+          <ion-label position="stacked">Mensagem Personalizada</ion-label>
+          <ion-textarea
+            formControlName="message"
+            placeholder="Digite uma mensagem personalizada..."
+            rows="3"
+            maxlength="200"
+            [class.ion-invalid]="message?.invalid && message?.touched"
+          >
+          </ion-textarea>
+        </ion-item>
+
+        <!-- Checkbox para mensagem personalizada -->
+        <ion-item>
+          <ion-checkbox
+            formControlName="customMessage"
+            slot="start"
+          ></ion-checkbox>
+          <ion-label>Usar mensagem personalizada</ion-label>
+        </ion-item>
+      </ion-card-content>
+    </ion-card>
+
+    <!-- Botões de Ação -->
+    <div class="action-buttons">
+      <ion-button
+        expand="block"
+        type="submit"
+        [disabled]="reminderForm.invalid || loading || !notificationPermission"
+      >
+        <ion-icon name="save-outline" slot="start"></ion-icon>
+        {{
+          loading
+            ? "Salvando..."
+            : isEditing
+            ? "Atualizar Lembrete"
+            : "Criar Lembrete"
+        }}
+      </ion-button>
+
+      <ion-button
+        expand="block"
+        fill="outline"
+        (click)="closeModal()"
+        [disabled]="loading"
+      >
+        Cancelar
+      </ion-button>
+    </div>
+  </form>
+</ion-content>

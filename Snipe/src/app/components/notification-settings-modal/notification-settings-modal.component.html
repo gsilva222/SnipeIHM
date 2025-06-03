@@ -1,0 +1,241 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title>
+      <ion-icon name="settings-outline" style="margin-right: 8px"></ion-icon>
+      Configurações de Notificação
+    </ion-title>
+    <ion-buttons slot="end">
+      <ion-button fill="clear" (click)="closeModal()">
+        <ion-icon name="close" slot="icon-only"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <!-- Status das Permissões -->
+  <ion-card class="permission-status-card">
+    <ion-card-header>
+      <ion-card-title>
+        <ion-icon name="notifications-outline"></ion-icon>
+        Status das Permissões
+      </ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <div class="permission-status">
+        <div class="status-info">
+          <ion-icon
+            [name]="hasPermission ? 'checkmark-circle' : 'close-circle'"
+            [color]="hasPermission ? 'success' : 'danger'"
+          ></ion-icon>
+          <span>{{
+            hasPermission ? "Permissões Concedidas" : "Permissões Negadas"
+          }}</span>
+        </div>
+
+        <ion-button
+          *ngIf="!hasPermission"
+          fill="solid"
+          color="primary"
+          (click)="requestPermissions()"
+        >
+          <ion-icon name="checkmark-circle" slot="start"></ion-icon>
+          Solicitar Permissões
+        </ion-button>
+
+        <div *ngIf="hasPermission" class="permission-info">
+          <ion-note>
+            <ion-icon name="information-circle-outline"></ion-icon>
+            Você pode gerenciar as permissões nas configurações do sistema.
+          </ion-note>
+        </div>
+      </div>
+    </ion-card-content>
+  </ion-card>
+
+  <!-- Configurações Principais -->
+  <ion-card class="main-settings-card">
+    <ion-card-header>
+      <ion-card-title>Configurações Gerais</ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <form [formGroup]="settingsForm">
+        <!-- Ativar/Desativar Notificações -->
+        <ion-item>
+          <ion-icon
+            name="notifications-outline"
+            slot="start"
+            color="primary"
+          ></ion-icon>
+          <ion-label>
+            <h2>Notificações Ativadas</h2>
+            <p>Receber lembretes de filmes</p>
+          </ion-label>
+          <ion-toggle
+            formControlName="enabled"
+            slot="end"
+            [disabled]="!hasPermission"
+          >
+          </ion-toggle>
+        </ion-item>
+
+        <!-- Som -->
+        <ion-item>
+          <ion-icon
+            name="volume-high-outline"
+            slot="start"
+            color="success"
+          ></ion-icon>
+          <ion-label>
+            <h2>Som</h2>
+            <p>Reproduzir som nas notificações</p>
+          </ion-label>
+          <ion-toggle formControlName="sound" slot="end" [disabled]="!enabled">
+          </ion-toggle>
+        </ion-item>
+        <!-- Vibração -->
+        <ion-item>
+          <ion-icon
+            name="phone-portrait-outline"
+            slot="start"
+            color="warning"
+          ></ion-icon>
+          <ion-label>
+            <h2>Vibração</h2>
+            <p>Vibrar ao receber notificações</p>
+          </ion-label>
+          <ion-toggle
+            formControlName="vibration"
+            slot="end"
+            [disabled]="!enabled"
+          >
+          </ion-toggle>
+        </ion-item>
+      </form>
+    </ion-card-content>
+  </ion-card>
+
+  <!-- Tempo de Antecedência -->
+  <ion-card class="timing-settings-card">
+    <ion-card-header>
+      <ion-card-title>
+        <ion-icon name="time-outline"></ion-icon>
+        Tempo de Antecedência
+      </ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <!-- Seleção Rápida -->
+      <div class="quick-options">
+        <ion-label>Opções Rápidas:</ion-label>
+        <div class="option-chips">
+          <ion-button
+            *ngFor="let option of reminderOptions"
+            [fill]="
+              reminderMinutesBefore === option.value ? 'solid' : 'outline'
+            "
+            size="small"
+            (click)="
+              settingsForm.patchValue({ reminderMinutesBefore: option.value })
+            "
+            [disabled]="!enabled"
+          >
+            {{ option.label }}
+          </ion-button>
+        </div>
+      </div>
+
+      <!-- Range Personalizado -->
+      <ion-item>
+        <ion-icon name="time-outline" slot="start" color="tertiary"></ion-icon>
+        <ion-label>
+          <h2>Personalizado</h2>
+          <p>{{ getReminderTimeText(reminderMinutesBefore) }} antes</p>
+        </ion-label>
+      </ion-item>
+
+      <ion-item>
+        <ion-range
+          formControlName="reminderMinutesBefore"
+          [min]="5"
+          [max]="1440"
+          [step]="5"
+          [disabled]="!enabled"
+          snaps="true"
+          color="tertiary"
+        >
+          <ion-label slot="start">5m</ion-label>
+          <ion-label slot="end">1d</ion-label>
+        </ion-range>
+      </ion-item>
+    </ion-card-content>
+  </ion-card>
+
+  <!-- Informações e Ações -->
+  <ion-card class="info-actions-card">
+    <ion-card-header>
+      <ion-card-title>Informações e Ações</ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <!-- Informações -->
+      <ion-list>
+        <ion-item>
+          <ion-icon
+            name="information-circle-outline"
+            slot="start"
+            color="medium"
+          ></ion-icon>
+          <ion-label>
+            <h3>Notificações Pendentes</h3>
+            <p>
+              {{ pendingNotifications }} lembrete{{
+                pendingNotifications !== 1 ? "s" : ""
+              }}
+              agendado{{ pendingNotifications !== 1 ? "s" : "" }}
+            </p>
+          </ion-label>
+        </ion-item>
+      </ion-list>
+
+      <!-- Botões de Ação -->
+      <div class="action-buttons">
+        <ion-button
+          expand="block"
+          fill="outline"
+          (click)="testNotification()"
+          [disabled]="!hasPermission || !enabled"
+        >
+          <ion-icon name="notifications-outline" slot="start"></ion-icon>
+          Testar Notificação
+        </ion-button>
+
+        <ion-button
+          expand="block"
+          fill="outline"
+          color="danger"
+          (click)="cancelAllNotifications()"
+          [disabled]="pendingNotifications === 0"
+        >
+          <ion-icon name="close-circle" slot="start"></ion-icon>
+          Cancelar Todas as Notificações
+        </ion-button>
+      </div>
+    </ion-card-content>
+  </ion-card>
+
+  <!-- Botões de Salvar/Cancelar -->
+  <div class="main-actions">
+    <ion-button expand="block" (click)="saveSettings()" [disabled]="loading">
+      <ion-icon name="save-outline" slot="start"></ion-icon>
+      {{ loading ? "Salvando..." : "Salvar Configurações" }}
+    </ion-button>
+
+    <ion-button
+      expand="block"
+      fill="outline"
+      (click)="closeModal()"
+      [disabled]="loading"
+    >
+      Cancelar
+    </ion-button>
+  </div>
+</ion-content>

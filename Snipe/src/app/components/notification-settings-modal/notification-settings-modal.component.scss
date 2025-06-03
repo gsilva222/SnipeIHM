@@ -1,0 +1,355 @@
+// Estilo do Modal de Configurações de Notificação - Snipe
+:host {
+  --background: var(--ion-background-color);
+}
+
+.permission-status-card {
+  margin-bottom: 20px;
+  border: 2px solid var(--ion-color-primary);
+
+  ion-card-header {
+    background: var(--ion-color-primary-tint);
+
+    ion-card-title {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--ion-color-primary-contrast);
+
+      ion-icon {
+        font-size: 24px;
+      }
+    }
+  }
+
+  .permission-status {
+    .status-info {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 16px;
+
+      ion-icon {
+        font-size: 24px;
+      }
+
+      span {
+        font-size: 16px;
+        font-weight: 600;
+        flex: 1;
+      }
+    }
+
+    .permission-info {
+      margin-top: 16px;
+
+      ion-note {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 12px;
+        background: var(--ion-color-light);
+        border-radius: 8px;
+        color: var(--ion-color-medium);
+
+        ion-icon {
+          font-size: 16px;
+          flex-shrink: 0;
+        }
+      }
+    }
+  }
+}
+
+.main-settings-card {
+  margin-bottom: 20px;
+
+  ion-card-header {
+    background: var(--ion-color-success-tint);
+
+    ion-card-title {
+      color: var(--ion-color-success-contrast);
+    }
+  }
+
+  ion-item {
+    --padding-start: 16px;
+    --inner-padding-end: 16px;
+    margin-bottom: 8px;
+
+    ion-icon[slot="start"] {
+      margin-right: 16px;
+      font-size: 24px;
+    }
+
+    ion-label {
+      h2 {
+        font-size: 16px;
+        font-weight: 600;
+        margin: 0 0 4px 0;
+        color: var(--ion-text-color);
+      }
+
+      p {
+        font-size: 14px;
+        color: var(--ion-color-medium);
+        margin: 0;
+      }
+    }
+
+    ion-toggle {
+      --background: var(--ion-color-medium);
+      --background-checked: var(--ion-color-primary);
+      --handle-background: white;
+      --handle-background-checked: white;
+    }
+  }
+}
+
+.timing-settings-card {
+  margin-bottom: 20px;
+
+  ion-card-header {
+    background: var(--ion-color-tertiary-tint);
+
+    ion-card-title {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--ion-color-tertiary-contrast);
+
+      ion-icon {
+        font-size: 24px;
+      }
+    }
+  }
+
+  .quick-options {
+    margin-bottom: 24px;
+
+    ion-label {
+      display: block;
+      margin-bottom: 12px;
+      font-weight: 600;
+      color: var(--ion-text-color);
+    }
+
+    .option-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+
+      ion-button {
+        --border-radius: 20px;
+        height: 36px;
+        font-size: 12px;
+
+        &[fill="solid"] {
+          --background: var(--ion-color-tertiary);
+          --color: var(--ion-color-tertiary-contrast);
+        }
+
+        &[fill="outline"] {
+          --border-color: var(--ion-color-tertiary);
+          --color: var(--ion-color-tertiary);
+        }
+      }
+    }
+  }
+
+  ion-range {
+    --bar-background: var(--ion-color-step-200);
+    --bar-background-active: var(--ion-color-tertiary);
+    --bar-height: 6px;
+    --bar-border-radius: 3px;
+    --knob-background: var(--ion-color-tertiary);
+    --knob-size: 24px;
+    --pin-background: var(--ion-color-tertiary);
+    --pin-color: white;
+    padding: 16px 0;
+  }
+}
+
+.info-actions-card {
+  margin-bottom: 32px;
+
+  ion-card-header {
+    background: var(--ion-color-warning-tint);
+
+    ion-card-title {
+      color: var(--ion-color-warning-contrast);
+    }
+  }
+
+  ion-list {
+    background: transparent;
+    margin-bottom: 20px;
+
+    ion-item {
+      --background: var(--ion-color-step-50);
+      --border-radius: 8px;
+      margin-bottom: 8px;
+
+      ion-label {
+        h3 {
+          font-size: 15px;
+          font-weight: 600;
+          margin: 0 0 4px 0;
+          color: var(--ion-text-color);
+        }
+
+        p {
+          font-size: 13px;
+          color: var(--ion-color-medium);
+          margin: 0;
+        }
+      }
+    }
+  }
+
+  .action-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+
+    ion-button {
+      --border-radius: 12px;
+      height: 44px;
+      font-weight: 600;
+
+      &[color="danger"] {
+        --border-color: var(--ion-color-danger);
+        --color: var(--ion-color-danger);
+      }
+    }
+  }
+}
+
+// Botões principais
+.main-actions {
+  padding-bottom: 16px;
+
+  ion-button {
+    --border-radius: 12px;
+    height: 48px;
+    font-weight: 600;
+    margin-bottom: 12px;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+}
+
+// Estilização geral dos cards
+ion-card {
+  border-radius: 16px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+
+  ion-card-header {
+    padding: 16px 20px;
+
+    ion-card-title {
+      font-size: 18px;
+      font-weight: 600;
+    }
+  }
+
+  ion-card-content {
+    padding: 20px;
+  }
+}
+
+// Responsividade
+@media (max-width: 768px) {
+  .option-chips {
+    ion-button {
+      font-size: 11px;
+      height: 32px;
+
+      // Quebrar em 2 colunas em telas pequenas
+      width: calc(50% - 4px);
+    }
+  }
+
+  .action-buttons {
+    ion-button {
+      height: 40px;
+      font-size: 14px;
+    }
+  }
+
+  .status-info {
+    span {
+      font-size: 14px;
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .option-chips {
+    ion-button {
+      width: 100%;
+    }
+  }
+}
+
+// Estados desabilitados
+ion-toggle[disabled] {
+  opacity: 0.4;
+}
+
+ion-button[disabled] {
+  opacity: 0.5;
+}
+
+ion-range[disabled] {
+  opacity: 0.4;
+  pointer-events: none;
+}
+
+// Animações
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+ion-card {
+  animation: slideInUp 0.3s ease-out;
+
+  &:nth-child(2) {
+    animation-delay: 0.1s;
+  }
+
+  &:nth-child(3) {
+    animation-delay: 0.2s;
+  }
+
+  &:nth-child(4) {
+    animation-delay: 0.3s;
+  }
+}
+
+// Melhorias visuais para toggles
+ion-toggle {
+  scale: 1.1;
+
+  &:hover {
+    scale: 1.15;
+  }
+}
+
+// Melhorias no range
+ion-item:has(ion-range) {
+  ion-label p {
+    font-weight: 600;
+    color: var(--ion-color-tertiary);
+  }
+}

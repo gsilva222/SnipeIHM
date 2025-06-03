@@ -44,6 +44,13 @@ export const routes: Routes = [
           ),
       },
       {
+        path: 'reminders',
+        loadComponent: () =>
+          import('../pages/reminders/reminders.page').then(
+            (m) => m.RemindersPage
+          ),
+      },
+      {
         path: '',
         redirectTo: '/tabs/home',
         pathMatch: 'full',

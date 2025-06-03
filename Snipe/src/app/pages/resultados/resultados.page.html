@@ -24,7 +24,6 @@
       class="compact-searchbar"
     >
     </ion-searchbar>
-
     <!-- Filtros compactos em linha -->
     <div class="compact-filters">
       <!-- Filtro de Género -->
@@ -40,6 +39,39 @@
         >
         <ion-icon name="chevron-down" slot="end"></ion-icon>
       </ion-chip>
+      <!-- Filtro de Ano -->
+      <ion-chip
+        class="filter-chip year-filter"
+        [color]="(anoInicio > 0 || anoFim > 0) ? 'primary' : 'medium'"
+        (click)="openYearModal()"
+      >
+        <ion-icon name="calendar-outline" slot="start"></ion-icon>
+        <ion-label>{{ getYearFilterText() }}</ion-label>
+        <ion-icon name="chevron-down" slot="end"></ion-icon>
+      </ion-chip>
+
+      <!-- Filtro de Avaliação -->
+      <ion-chip
+        class="filter-chip rating-filter"
+        [color]="avaliacaoMinima > 0 ? 'primary' : 'medium'"
+        (click)="openRatingModal()"
+      >
+        <ion-icon name="star-outline" slot="start"></ion-icon>
+        <ion-label>{{ getRatingFilterText() }}</ion-label>
+        <ion-icon name="chevron-down" slot="end"></ion-icon>
+      </ion-chip>
+
+      <!-- Filtro de Tipo de Conteúdo -->
+      <ion-chip
+        class="filter-chip content-type-filter"
+        [color]="tipoConteudo !== 'all' ? 'primary' : 'medium'"
+        (click)="openContentTypeModal()"
+      >
+        <ion-icon name="film-outline" slot="start"></ion-icon>
+        <ion-label>{{ getContentTypeText() }}</ion-label>
+        <ion-icon name="chevron-down" slot="end"></ion-icon>
+      </ion-chip>
+
       <!-- Filtro de Ordenação -->
       <ion-chip
         class="filter-chip"
@@ -67,7 +99,7 @@
       <ion-chip
         class="clear-chip"
         color="danger"
-        *ngIf="generoSelecionado || ordenacao"
+        *ngIf="generoSelecionado || ordenacao || anoInicio > 0 || anoFim > 0 || avaliacaoMinima > 0 || tipoConteudo !== 'all'"
         (click)="clearFilters()"
       >
         <ion-icon name="close" slot="start"></ion-icon>
@@ -113,7 +145,7 @@
   <!-- Estado vazio melhorado -->
   <div
     class="no-results"
-    *ngIf="!isLoading && filmes.length === 0 && (termoPesquisa || generoSelecionado)"
+    *ngIf="!isLoading && filmes.length === 0 && (termoPesquisa || generoSelecionado || anoInicio > 0 || anoFim > 0 || avaliacaoMinima > 0 || tipoConteudo !== 'all')"
   >
     <div class="no-results-content">
       <ion-icon name="film-outline" class="no-results-icon"></ion-icon>
