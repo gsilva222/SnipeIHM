@@ -16,25 +16,19 @@ export const routes: Routes = [
           import('../pages/home/home.page').then((m) => m.HomePage),
       },
       {
-        path: 'resultados',
+        path: 'pesquisa',
         loadComponent: () =>
-          import('../pages/resultados/resultados.page').then(
-            (m) => m.ResultadosPage
-          ),
+          import('../pages/pesquisa/pesquisa.page').then((m) => m.PesquisaPage),
       },
       {
-        path: 'resultados/:query',
+        path: 'pesquisa/:query',
         loadComponent: () =>
-          import('../pages/resultados/resultados.page').then(
-            (m) => m.ResultadosPage
-          ),
+          import('../pages/pesquisa/pesquisa.page').then((m) => m.PesquisaPage),
       },
       {
-        path: 'resultados/:query/:genre',
+        path: 'pesquisa/:query/:genre',
         loadComponent: () =>
-          import('../pages/resultados/resultados.page').then(
-            (m) => m.ResultadosPage
-          ),
+          import('../pages/pesquisa/pesquisa.page').then((m) => m.PesquisaPage),
       },
       {
         path: 'favoritos',

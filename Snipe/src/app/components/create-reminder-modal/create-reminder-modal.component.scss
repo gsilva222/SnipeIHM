@@ -276,6 +276,106 @@ ion-item {
   }
 }
 
+// Card Informativo
+.info-card {
+  margin-bottom: 24px;
+  border: 2px solid var(--ion-color-primary);
+  --background: var(--ion-background-color);
+  animation: slideInDown 0.3s ease-out;
+
+  ion-card-header {
+    background: var(--ion-color-primary);
+
+    ion-card-title {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: white;
+      font-size: 18px;
+
+      ion-icon {
+        font-size: 24px;
+      }
+    }
+  }
+
+  .info-content {
+    padding: 16px 0;
+    text-align: center;
+
+    p {
+      color: white;
+      font-size: 16px;
+      line-height: 1.5;
+      margin-bottom: 20px;
+      padding: 0 16px;
+    }
+
+    .action-button {
+      max-width: 240px;
+      margin: 0 auto;
+      --border-radius: 12px;
+      font-weight: 600;
+    }
+  }
+}
+
+// Card Informativo sobre Favoritos
+.favorites-required {
+  margin-bottom: 24px;
+  border: 2px solid var(--ion-color-primary);
+  --background: var(--ion-background-color);
+  animation: slideInDown 0.3s ease-out;
+
+  ion-card-header {
+    background: var(--ion-color-primary);
+
+    ion-card-title {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: white;
+      font-size: 18px;
+
+      ion-icon {
+        font-size: 24px;
+      }
+    }
+  }
+
+  .info-content {
+    padding: 16px 0;
+    text-align: center;
+
+    p {
+      color: white;
+      font-size: 16px;
+      line-height: 1.5;
+      margin-bottom: 20px;
+      padding: 0 16px;
+    }
+
+    .action-button {
+      max-width: 240px;
+      margin: 0 auto;
+      --border-radius: 12px;
+      font-weight: 600;
+      height: 44px;
+    }
+  }
+}
+
+@keyframes slideInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 // Responsividade
 @media (max-width: 768px) {
   .movie-preview {

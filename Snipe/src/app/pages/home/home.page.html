@@ -37,6 +37,49 @@
       Pesquisar Filmes e Séries
     </ion-button>
 
+    <!-- Seção Recomendados -->
+    <div class="section" *ngIf="recommendedMovies.length > 0">
+      <div class="section-header">
+        <h2>
+          <ion-icon name="sparkles" color="warning"></ion-icon>
+          Recomendados Para Si
+        </h2>
+        <ion-button fill="clear" size="small" (click)="viewAllRecommended()">
+          Ver Todos
+          <ion-icon name="chevron-forward" slot="end"></ion-icon>
+        </ion-button>
+      </div>
+
+      <!-- Slides de Filmes Recomendados -->
+      <swiper-container
+        slides-per-view="2.2"
+        space-between="16"
+        class="movies-swiper"
+      >
+        <swiper-slide *ngFor="let movie of recommendedMovies">
+          <div class="movie-slide" (click)="openMovieDetails(movie)">
+            <div class="movie-poster">
+              <img
+                [src]="filmesService.getImageUrl(movie.poster_path, 'w300')"
+                [alt]="movie.title"
+                onerror="this.src='assets/icon/no-image.png'"
+              />
+              <div class="movie-rating">
+                <ion-icon name="star" color="warning"></ion-icon>
+                {{ movie.vote_average | number:'1.1-1' }}
+              </div>
+            </div>
+            <div class="movie-info">
+              <h3>{{ movie.title }}</h3>
+              <p class="movie-year">
+                {{ (movie.release_date | date:'yyyy') || 'N/A' }}
+              </p>
+            </div>
+          </div>
+        </swiper-slide>
+      </swiper-container>
+    </div>
+
     <!-- Seção Filmes Populares -->
     <div class="section" *ngIf="popularMovies.length > 0">
       <div class="section-header">

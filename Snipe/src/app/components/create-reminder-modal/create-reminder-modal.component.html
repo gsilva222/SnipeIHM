@@ -14,6 +14,36 @@
 
 <ion-content class="ion-padding">
   <form [formGroup]="reminderForm" (ngSubmit)="saveReminder()">
+    <!-- Card Informativo sobre Favoritos -->
+    <ion-card
+      *ngIf="favoriteMovies.length === 0"
+      class="info-card favorites-required"
+    >
+      <ion-card-header>
+        <ion-card-title>
+          <ion-icon name="star-outline"></ion-icon>
+          Adicione aos Favoritos Primeiro
+        </ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <div class="info-content">
+          <p>
+            Para criar um lembrete, primeiro precisa de adicionar o filme aos
+            seus favoritos.
+          </p>
+          <ion-button
+            expand="block"
+            (click)="closeModal()"
+            color="primary"
+            class="action-button"
+          >
+            <ion-icon name="heart" slot="start"></ion-icon>
+            Ir para Favoritos
+          </ion-button>
+        </div>
+      </ion-card-content>
+    </ion-card>
+
     <!-- Permissões de Notificação -->
     <ion-card *ngIf="!notificationPermission" class="permission-card">
       <ion-card-header>
@@ -77,7 +107,7 @@
             <ion-icon name="search-outline" slot="start"></ion-icon>
             {{
               favoriteMovies.length === 0
-                ? "Nenhum favorito encontrado"
+                ? "Adicione filmes aos favoritos primeiro"
                 : "Escolher dos Favoritos"
             }}
           </ion-button>

@@ -174,29 +174,51 @@ export class FilmesService {
   }
 
   /**
-   * Pesquisa por género
-   * @param genreId - ID do género
-   * @param mediaType - Tipo de média ('movie' ou 'tv')
-   * @param page - Página (padrão: 1)
-   * @returns Observable com resultados
+   * Obtém filmes por gênero
+   * @param genreId ID do gênero
+   * @param mediaType Tipo de mídia (movie, tv, all)
+   * @param page Número da página
    */
   searchByGenre(
     genreId: number,
-    mediaType: 'movie' | 'tv' = 'movie',
+    mediaType: 'movie' | 'tv' | 'all' = 'all',
     page: number = 1
-  ): Observable<TMDbResponse> {
-    const url = `${this.BASE_URL}/discover/${mediaType}`;
+  ): Observable<any> {
     const params = {
       api_key: this.API_KEY,
+      language: 'pt-PT',
       with_genres: genreId.toString(),
       page: page.toString(),
-      language: 'pt-PT',
+      include_adult: false,
     };
 
-    return this.http.get<TMDbResponse>(url, { params }).pipe(
-      map((response) => this.processMoviesResponse(response)),
-      catchError(this.handleError)
-    );
+    if (mediaType === 'all') {
+      // Se for 'all', buscar tanto filmes quanto séries
+      return this.http.get(`${this.BASE_URL}/discover/movie`, { params }).pipe(
+        map((movieResponse: any) => {
+          return this.http.get(`${this.BASE_URL}/discover/tv`, { params }).pipe(
+            map((tvResponse: any) => {
+              // Combinar resultados de filmes e séries
+              const combinedResults = [
+                ...movieResponse.results,
+                ...tvResponse.results,
+              ];
+              return {
+                ...movieResponse,
+                results: combinedResults,
+              };
+            })
+          );
+        }),
+        catchError(this.handleError)
+      );
+    }
+
+    // Se for específico para filme ou série
+    const endpoint = mediaType === 'movie' ? 'movie' : 'tv';
+    return this.http
+      .get(`${this.BASE_URL}/discover/${endpoint}`, { params })
+      .pipe(catchError(this.handleError));
   }
 
   /**

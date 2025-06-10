@@ -40,6 +40,8 @@ import {
   notificationsOutline,
   checkmarkCircle,
   searchOutline,
+  heart,
+  starOutline,
 } from 'ionicons/icons';
 
 import {
@@ -109,14 +111,16 @@ export class CreateReminderModalComponent implements OnInit {
     private filmesService: FilmesService
   ) {
     addIcons({
-      close,
-      saveOutline,
-      calendarOutline,
-      timeOutline,
       filmOutline,
+      close,
+      starOutline,
+      heart,
       notificationsOutline,
       checkmarkCircle,
       searchOutline,
+      calendarOutline,
+      saveOutline,
+      timeOutline,
     });
 
     this.initializeForm();
@@ -286,8 +290,16 @@ export class CreateReminderModalComponent implements OnInit {
 
   /**
    * Salva o lembrete
-   */
-  async saveReminder(): Promise<void> {
+   */ async saveReminder(): Promise<void> {
+    // Verificar se há filmes nos favoritos
+    if (this.favoriteMovies.length === 0) {
+      await this.showToast(
+        'É necessário adicionar filmes aos favoritos antes de criar um lembrete',
+        'warning'
+      );
+      return;
+    }
+
     if (this.reminderForm.invalid) {
       await this.showToast(
         'Por favor, preencha todos os campos obrigatórios',
@@ -298,7 +310,7 @@ export class CreateReminderModalComponent implements OnInit {
 
     if (!this.notificationPermission) {
       await this.showToast(
-        'Permissões de notificação são necessárias',
+        'É necessário permitir notificações para criar lembretes',
         'warning'
       );
       return;
@@ -344,13 +356,37 @@ export class CreateReminderModalComponent implements OnInit {
 
         await this.reminderService.createReminder(request);
       }
-
       await this.modalController.dismiss({
         reminder: formValue,
       });
-    } catch (error) {
+
+      await this.showToast(
+        this.isEditing
+          ? 'Lembrete atualizado com sucesso!'
+          : 'Lembrete criado com sucesso!',
+        'success'
+      );
+    } catch (error: unknown) {
       console.error('Erro ao salvar lembrete:', error);
-      await this.showToast('Erro ao salvar lembrete', 'danger');
+
+      // Mensagem mais específica baseada no tipo de erro
+      let errorMessage = 'Ocorreu um erro ao salvar o lembrete. ';
+
+      if (error instanceof Error) {
+        if (error.message.includes('favorites')) {
+          errorMessage =
+            'O filme precisa estar nos favoritos para criar um lembrete.';
+        } else if (error.message.includes('notification')) {
+          errorMessage =
+            'Não foi possível agendar a notificação. Verifique as permissões.';
+        } else {
+          errorMessage += 'Por favor, tente novamente.';
+        }
+      } else {
+        errorMessage += 'Por favor, tente novamente.';
+      }
+
+      await this.showToast(errorMessage, 'danger');
     } finally {
       this.loading = false;
     }

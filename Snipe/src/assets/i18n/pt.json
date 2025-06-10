@@ -5,7 +5,7 @@
   },
   "navigation": {
     "home": "Início",
-    "results": "Resultados",
+    "results": "Pesquisa",
     "favorites": "Favoritos"
   },
   "home": {
@@ -17,13 +17,13 @@
     "loading": "A pesquisar..."
   },
   "results": {
-    "title": "Resultados da Pesquisa",
-    "no_results": "Nenhum resultado encontrado",
+    "title": "Pesquisa",
+    "no_results": "Nenhum filme encontrado",
     "sort_by": "Ordenar por:",
     "sort_relevance": "Relevância",
     "sort_date": "Data",
     "sort_genre": "Género",
-    "loading": "A carregar resultados..."
+    "loading": "A procurar filmes..."
   },
   "favorites": {
     "title": "Os Meus Favoritos",

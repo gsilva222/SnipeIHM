@@ -14,8 +14,6 @@ import {
   IonSpinner,
   IonText,
   IonIcon,
-  IonBackButton,
-  IonButtons,
   IonInfiniteScroll,
   IonInfiniteScrollContent,
   InfiniteScrollCustomEvent,
@@ -53,9 +51,9 @@ import { Movie } from '../../services/filmes.service';
  * Exibe os resultados da pesquisa com filtros e ordenação
  */
 @Component({
-  selector: 'app-resultados',
-  templateUrl: './resultados.page.html',
-  styleUrls: ['./resultados.page.scss'],
+  selector: 'app-pesquisa',
+  templateUrl: './pesquisa.page.html',
+  styleUrls: ['./pesquisa.page.scss'],
   standalone: true,
   imports: [
     IonContent,
@@ -69,8 +67,6 @@ import { Movie } from '../../services/filmes.service';
     IonSpinner,
     IonText,
     IonIcon,
-    IonBackButton,
-    IonButtons,
     IonInfiniteScroll,
     IonInfiniteScrollContent,
     IonSearchbar,
@@ -81,7 +77,7 @@ import { Movie } from '../../services/filmes.service';
     MovieCardComponent,
   ],
 })
-export class ResultadosPage implements OnInit {
+export class PesquisaPage implements OnInit {
   /** Lista de filmes/séries dos resultados */
   filmes: Movie[] = [];
 

@@ -1,17 +1,11 @@
 <!-- Página de Resultados da Pesquisa -->
 <ion-header [translucent]="true">
   <ion-toolbar color="primary">
-    <ion-buttons slot="start">
-      <ion-back-button
-        (click)="voltarPagina()"
-        default-href="/tabs/home"
-      ></ion-back-button>
-    </ion-buttons>
-    <ion-title>{{ stringsService.get('resultados') }}</ion-title>
+    <ion-title>Pesquisa</ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true" class="resultados-content">
+<ion-content [fullscreen]="true" class="pesquisa-content">
   <!-- Barra de pesquisa e filtros compactos -->
   <div class="search-filters-container">
     <!-- Barra de pesquisa -->

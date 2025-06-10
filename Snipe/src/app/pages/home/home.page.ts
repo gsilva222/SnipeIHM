@@ -26,12 +26,13 @@ import {
   film,
   chevronForward,
   play,
+  sparkles,
 } from 'ionicons/icons';
 
 import { FilmesService, Movie } from '../../services/filmes.service';
 import { StringsService } from '../../services/strings.service';
-import { MovieCardComponent } from '../../components/movie-card/movie-card.component';
 import { MovieDetailsModalComponent } from '../../components/movie-details-modal/movie-details-modal.component';
+import { RecommendationsService } from '../../services/recommendations.service';
 
 /**
  * Página inicial da aplicação Snipe
@@ -62,6 +63,9 @@ export class HomePage implements OnInit, OnDestroy {
   /** Lista de séries populares */
   popularTVShows: Movie[] = [];
 
+  /** Lista de filmes recomendados */
+  recommendedMovies: Movie[] = [];
+
   /** Estado de carregamento */
   isLoading = true;
 
@@ -77,7 +81,8 @@ export class HomePage implements OnInit, OnDestroy {
     private router: Router,
     public filmesService: FilmesService,
     public stringsService: StringsService,
-    private modalController: ModalController
+    private modalController: ModalController,
+    private recommendationsService: RecommendationsService
   ) {
     // Registar ícones necessários
     addIcons({
@@ -88,13 +93,14 @@ export class HomePage implements OnInit, OnDestroy {
       film,
       chevronForward,
       play,
+      sparkles,
     });
   }
   /**
    * Inicialização do componente
    */
   async ngOnInit() {
-    await this.loadPopularContent();
+    await this.loadAllContent();
   }
 
   /**
@@ -104,6 +110,35 @@ export class HomePage implements OnInit, OnDestroy {
     this.destroy$.next();
     this.destroy$.complete();
   }
+
+  /**
+   * Carrega todo o conteúdo (filmes, séries e recomendações)
+   */
+  private async loadAllContent() {
+    this.isLoading = true;
+    try {
+      // Carregar conteúdo popular
+      await this.loadPopularContent();
+
+      // Carregar recomendações
+      this.recommendationsService
+        .getRecommendationsBasedOnFavorites()
+        .pipe(takeUntil(this.destroy$))
+        .subscribe({
+          next: (movies) => {
+            this.recommendedMovies = movies;
+          },
+          error: (error) => {
+            console.error('Erro ao carregar recomendações:', error);
+          },
+        });
+    } catch (error) {
+      console.error('Erro ao carregar conteúdo:', error);
+    } finally {
+      this.isLoading = false;
+    }
+  }
+
   /**
    * Carrega conteúdo popular (filmes e séries)
    */
@@ -148,24 +183,33 @@ export class HomePage implements OnInit, OnDestroy {
    * Navega para a página de pesquisa
    */
   goToSearch() {
-    this.router.navigate(['/tabs/resultados']);
+    this.router.navigate(['/tabs/pesquisa']);
   }
 
   /**
    * Navega para ver todos os filmes populares
-   */
-  viewAllMovies() {
-    this.router.navigate(['/tabs/resultados'], {
+   */ viewAllMovies() {
+    this.router.navigate(['/tabs/pesquisa'], {
       queryParams: { type: 'popular_movies' },
     });
   }
 
   /**
    * Navega para ver todas as séries populares
-   */
-  viewAllTVShows() {
-    this.router.navigate(['/tabs/resultados'], {
+   */ viewAllTVShows() {
+    this.router.navigate(['/tabs/pesquisa'], {
       queryParams: { type: 'popular_tv' },
+    });
+  }
+  /**
+   * Navega para ver todas as recomendações
+   */
+  viewAllRecommended() {
+    this.router.navigate(['/tabs/pesquisa'], {
+      queryParams: {
+        type: 'recommended',
+        source: 'home',
+      },
     });
   }
   /**
