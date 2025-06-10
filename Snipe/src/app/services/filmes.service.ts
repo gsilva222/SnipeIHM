@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
-import { Observable, throwError, BehaviorSubject } from 'rxjs';
+import { Observable, throwError, BehaviorSubject, forkJoin } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { Storage } from '@ionic/storage-angular';
 
@@ -193,22 +193,20 @@ export class FilmesService {
     };
 
     if (mediaType === 'all') {
-      // Se for 'all', buscar tanto filmes quanto séries
-      return this.http.get(`${this.BASE_URL}/discover/movie`, { params }).pipe(
-        map((movieResponse: any) => {
-          return this.http.get(`${this.BASE_URL}/discover/tv`, { params }).pipe(
-            map((tvResponse: any) => {
-              // Combinar resultados de filmes e séries
-              const combinedResults = [
-                ...movieResponse.results,
-                ...tvResponse.results,
-              ];
-              return {
-                ...movieResponse,
-                results: combinedResults,
-              };
-            })
-          );
+      // Buscar filmes e séries em paralelo e combinar resultados
+      return forkJoin([
+        this.http.get<any>(`${this.BASE_URL}/discover/movie`, { params }),
+        this.http.get<any>(`${this.BASE_URL}/discover/tv`, { params }),
+      ]).pipe(
+        map(([movieResponse, tvResponse]) => {
+          const combinedResults = [
+            ...(movieResponse.results || []),
+            ...(tvResponse.results || []),
+          ];
+          return {
+            ...movieResponse,
+            results: combinedResults,
+          };
         }),
         catchError(this.handleError)
       );
