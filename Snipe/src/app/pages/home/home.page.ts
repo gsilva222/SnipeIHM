@@ -61,9 +61,7 @@ export class HomePage implements OnInit, OnDestroy {
   popularMovies: Movie[] = [];
 
   /** Lista de séries populares */
-  popularTVShows: Movie[] = [];
-
-  /** Lista de filmes recomendados */
+  popularTVShows: Movie[] = [];  /** Lista de filmes recomendados */
   recommendedMovies: Movie[] = [];
 
   /** Estado de carregamento */
@@ -77,7 +75,7 @@ export class HomePage implements OnInit, OnDestroy {
    * @param filmesService - Serviço de filmes
    * @param stringsService - Serviço de strings
    * @param modalController - Controller para modais
-   */ constructor(
+   */  constructor(
     private router: Router,
     public filmesService: FilmesService,
     public stringsService: StringsService,
@@ -109,9 +107,7 @@ export class HomePage implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
-  }
-
-  /**
+  }  /**
    * Carrega todo o conteúdo (filmes, séries e recomendações)
    */
   private async loadAllContent() {
@@ -127,6 +123,7 @@ export class HomePage implements OnInit, OnDestroy {
         .subscribe({
           next: (movies) => {
             this.recommendedMovies = movies;
+            console.log(`📱 ${movies.length} recomendações carregadas`);
           },
           error: (error) => {
             console.error('Erro ao carregar recomendações:', error);
@@ -225,8 +222,6 @@ export class HomePage implements OnInit, OnDestroy {
       backdropDismiss: true,
       showBackdrop: true,
       cssClass: 'movie-details-modal',
-    });
-
-    await modal.present();
+    });    await modal.present();
   }
 }

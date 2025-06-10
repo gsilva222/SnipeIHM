@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
-import { Observable, throwError, BehaviorSubject, forkJoin } from 'rxjs';
+import { Observable, throwError, BehaviorSubject, forkJoin, of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { Storage } from '@ionic/storage-angular';
 
@@ -91,9 +91,12 @@ export class FilmesService {
 
   /** Observable público dos favoritos */
   public favoritos$ = this.favoritosSubject.asObservable();
-
   /** Cache de géneros */
   private genresCache: Genre[] = [];
+
+  /** Cache para requisições da API com TTL de 10 minutos */
+  private requestCache = new Map<string, { data: any; expiry: number }>();
+  private readonly CACHE_TTL = 10 * 60 * 1000; // 10 minutos em ms
 
   /**
    * Construtor do serviço de filmes
@@ -104,13 +107,50 @@ export class FilmesService {
     this.initStorage();
     this.loadGenres();
   }
-
   /**
    * Inicializa o armazenamento
    */
   private async initStorage(): Promise<void> {
     await this.storage.create();
     this.loadFavorites();
+  }
+
+  /**
+   * Verifica se existe cache válido para uma chave
+   */
+  private isCacheValid(key: string): boolean {
+    const cached = this.requestCache.get(key);
+    return cached ? cached.expiry > Date.now() : false;
+  }
+
+  /**
+   * Obtém dados do cache
+   */
+  private getCachedData(key: string): any {
+    const cached = this.requestCache.get(key);
+    return cached?.data;
+  }
+
+  /**
+   * Armazena dados no cache
+   */
+  private setCacheData(key: string, data: any): void {
+    this.requestCache.set(key, {
+      data,
+      expiry: Date.now() + this.CACHE_TTL
+    });
+  }
+
+  /**
+   * Limpa cache expirado
+   */
+  private cleanExpiredCache(): void {
+    const now = Date.now();
+    for (const [key, value] of this.requestCache.entries()) {
+      if (value.expiry <= now) {
+        this.requestCache.delete(key);
+      }
+    }
   }
 
   /**
@@ -172,7 +212,6 @@ export class FilmesService {
       catchError(this.handleError)
     );
   }
-
   /**
    * Obtém filmes por gênero
    * @param genreId ID do gênero
@@ -184,12 +223,25 @@ export class FilmesService {
     mediaType: 'movie' | 'tv' | 'all' = 'all',
     page: number = 1
   ): Observable<any> {
+    // Limpar cache expirado periodicamente
+    this.cleanExpiredCache();
+
+    const cacheKey = `genre_${genreId}_${mediaType}_${page}`;
+    
+    // Verificar cache
+    if (this.isCacheValid(cacheKey)) {
+      console.log(`📦 Cache hit para gênero ${genreId}`);
+      return of(this.getCachedData(cacheKey));
+    }
+
     const params = {
       api_key: this.API_KEY,
       language: 'pt-PT',
       with_genres: genreId.toString(),
       page: page.toString(),
       include_adult: false,
+      'sort_by': 'vote_average.desc', // Prioriza filmes melhor avaliados
+      'vote_count.gte': '100', // Mínimo de votos para confiabilidade
     };
 
     if (mediaType === 'all') {
@@ -200,13 +252,20 @@ export class FilmesService {
       ]).pipe(
         map(([movieResponse, tvResponse]) => {
           const combinedResults = [
-            ...(movieResponse.results || []),
-            ...(tvResponse.results || []),
+            ...(movieResponse.results || []).map((movie: any) => ({ ...movie, media_type: 'movie' })),
+            ...(tvResponse.results || []).map((tv: any) => ({ ...tv, media_type: 'tv' })),
           ];
-          return {
+          
+          const response = {
             ...movieResponse,
             results: combinedResults,
           };
+
+          // Armazenar no cache
+          this.setCacheData(cacheKey, response);
+          console.log(`💾 Dados em cache para gênero ${genreId}`);
+          
+          return response;
         }),
         catchError(this.handleError)
       );
@@ -216,7 +275,24 @@ export class FilmesService {
     const endpoint = mediaType === 'movie' ? 'movie' : 'tv';
     return this.http
       .get(`${this.BASE_URL}/discover/${endpoint}`, { params })
-      .pipe(catchError(this.handleError));
+      .pipe(
+        map((response: any) => {
+          // Adicionar media_type se não existir
+          if (response.results) {
+            response.results = response.results.map((item: any) => ({
+              ...item,
+              media_type: item.media_type || mediaType
+            }));
+          }
+
+          // Armazenar no cache
+          this.setCacheData(cacheKey, response);
+          console.log(`💾 Dados em cache para gênero ${genreId} (${mediaType})`);
+          
+          return response;
+        }),
+        catchError(this.handleError)
+      );
   }
 
   /**
