@@ -42,7 +42,18 @@ export class NotificationService {
           console.log('Notificação acionada:', notification);
         }
       );
+    } else {
+      console.log(
+        '🌐 Modo desenvolvimento - Notificações simuladas no browser'
+      );
     }
+  }
+
+  /**
+   * Verifica se está rodando no browser (modo desenvolvimento)
+   */
+  private isWebPlatform(): boolean {
+    return !Capacitor.isNativePlatform();
   }
 
   /**
@@ -58,6 +69,11 @@ export class NotificationService {
    * Verifica se as notificações estão habilitadas
    */
   async checkPermissions(): Promise<PermissionStatus> {
+    if (this.isWebPlatform()) {
+      // Simular permissões no browser
+      console.log('🌐 Simulando permissões no browser - sempre permitidas');
+      return { display: 'granted' };
+    }
     return await LocalNotifications.checkPermissions();
   }
 
@@ -82,8 +98,11 @@ export class NotificationService {
         reminderDateTime.getTime() - settings.reminderMinutesBefore * 60 * 1000
       );
 
-      // Verificar se a data não é no passado
-      if (notificationTime.getTime() <= Date.now()) {
+      // Verificar se a data não é no passado (com margem de segurança)
+      const currentTime = new Date();
+      const minimumTime = new Date(currentTime.getTime() + 30 * 1000); // 30 segundos no futuro
+
+      if (notificationTime.getTime() <= minimumTime.getTime()) {
         throw new Error('A data do lembrete deve ser no futuro');
       }
 
@@ -116,6 +135,24 @@ export class NotificationService {
           movieTitle: reminder.movieTitle,
         },
       };
+
+      // Verificar se está no browser (modo desenvolvimento)
+      if (this.isWebPlatform()) {
+        console.log('🌐 SIMULAÇÃO NO BROWSER 🌐');
+        console.log('📅 Lembrete que seria agendado:');
+        console.log(`🎬 Filme: ${reminder.movieTitle}`);
+        console.log(`⏰ Data/Hora: ${reminderDateTime.toLocaleString()}`);
+        console.log(`🔔 Notificação em: ${notificationTime.toLocaleString()}`);
+        console.log(
+          `💬 Mensagem: ${
+            reminder.message ||
+            `Não esqueça de assistir "${reminder.movieTitle}"`
+          }`
+        );
+
+        // Simular ID de notificação
+        return Date.now();
+      }
 
       await LocalNotifications.schedule({
         notifications: [notification],

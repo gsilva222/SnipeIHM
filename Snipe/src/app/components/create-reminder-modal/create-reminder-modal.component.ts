@@ -93,6 +93,7 @@ export class CreateReminderModalComponent implements OnInit {
   favoriteMovies: any[] = [];
   filteredMovies: any[] = [];
   showMovieSearch = false;
+  minDate: string;
   // Opções predefinidas
   quickMessages = [
     'Hora do Filme! 🍿',
@@ -123,6 +124,8 @@ export class CreateReminderModalComponent implements OnInit {
       timeOutline,
     });
 
+    // Inicializar data mínima (hoje) - valor fixo para evitar ExpressionChangedAfterItHasBeenCheckedError
+    this.minDate = new Date().toISOString();
     this.initializeForm();
   }
 
@@ -136,13 +139,6 @@ export class CreateReminderModalComponent implements OnInit {
     } else if (this.prefilledMovie) {
       this.populateFormWithMovie();
     }
-  }
-
-  /**
-   * Retorna a data mínima para o reminder (hoje)
-   */
-  get minDate(): string {
-    return new Date().toISOString();
   }
 
   /**
@@ -326,9 +322,13 @@ export class CreateReminderModalComponent implements OnInit {
       const [hours, minutes] = formValue.reminderTime.split(':').map(Number);
       reminderDateTime.setHours(hours, minutes, 0, 0);
 
-      if (reminderDateTime.getTime() <= Date.now()) {
+      // Adicionar margem de segurança para evitar problemas de timezone e processamento
+      const currentTime = new Date();
+      const minimumTime = new Date(currentTime.getTime() + 60 * 1000); // 1 minuto no futuro
+
+      if (reminderDateTime.getTime() <= minimumTime.getTime()) {
         await this.showToast(
-          'A data do lembrete deve ser no futuro',
+          'A data do lembrete deve ser pelo menos 1 minuto no futuro',
           'warning'
         );
         this.loading = false;
