@@ -149,7 +149,7 @@ export class ReminderService {
       );
 
       if (reminderIndex === -1) {
-        throw new Error('Lembrete não encontrado');
+        throw new Error('O lembrete que tentou editar não foi encontrado. Pode ter sido removido ou ocorreu um erro.');
       }
 
       const currentReminder = currentReminders[reminderIndex];

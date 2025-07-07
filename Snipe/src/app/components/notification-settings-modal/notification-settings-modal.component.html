@@ -149,21 +149,21 @@
         <ion-icon name="time-outline" slot="start" color="tertiary"></ion-icon>
         <ion-label>
           <h2>Personalizado</h2>
-          <p>{{ getReminderTimeText(reminderMinutesBefore) }} antes</p>
+          <p>{{ getReminderTimeText(reminderMinutesBefore) }}{{ reminderMinutesBefore > 0 ? ' antes' : '' }}</p>
         </ion-label>
       </ion-item>
 
       <ion-item>
         <ion-range
           formControlName="reminderMinutesBefore"
-          [min]="5"
+          [min]="0"
           [max]="1440"
           [step]="5"
           [disabled]="!enabled"
           snaps="true"
           color="tertiary"
         >
-          <ion-label slot="start">5m</ion-label>
+          <ion-label slot="start">0m</ion-label>
           <ion-label slot="end">1d</ion-label>
         </ion-range>
       </ion-item>

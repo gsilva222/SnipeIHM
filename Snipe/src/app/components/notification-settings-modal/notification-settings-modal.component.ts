@@ -83,6 +83,7 @@ export class NotificationSettingsModalComponent implements OnInit {
 
   // Opções predefinidas
   reminderOptions = [
+    { label: 'No horário exato', value: 0 },
     { label: '5 minutos antes', value: 5 },
     { label: '10 minutos antes', value: 10 },
     { label: '15 minutos antes', value: 15 },
@@ -128,7 +129,7 @@ export class NotificationSettingsModalComponent implements OnInit {
       enabled: [true],
       sound: [true],
       vibration: [true],
-      reminderMinutesBefore: [30],
+      reminderMinutesBefore: [0],
     });
   }
 
@@ -292,6 +293,10 @@ export class NotificationSettingsModalComponent implements OnInit {
    * Obtém texto formatado do tempo de antecedência
    */
   getReminderTimeText(minutes: number): string {
+    if (minutes === 0) {
+      return 'no horário exato';
+    }
+    
     if (minutes < 60) {
       return `${minutes} minuto${minutes > 1 ? 's' : ''}`;
     }

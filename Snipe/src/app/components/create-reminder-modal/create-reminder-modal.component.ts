@@ -290,23 +290,36 @@ export class CreateReminderModalComponent implements OnInit {
     // Verificar se há filmes nos favoritos
     if (this.favoriteMovies.length === 0) {
       await this.showToast(
-        'É necessário adicionar filmes aos favoritos antes de criar um lembrete',
+        'Primeiro adicione filmes aos seus favoritos. Vá para a página de pesquisa e marque filmes como favoritos.',
         'warning'
       );
       return;
     }
 
     if (this.reminderForm.invalid) {
-      await this.showToast(
-        'Por favor, preencha todos os campos obrigatórios',
-        'warning'
-      );
+      // Verificar campos específicos para dar feedback mais detalhado
+      const errors = [];
+      if (this.reminderForm.get('movieTitle')?.invalid) {
+        errors.push('título do filme');
+      }
+      if (this.reminderForm.get('reminderDate')?.invalid) {
+        errors.push('data');
+      }
+      if (this.reminderForm.get('reminderTime')?.invalid) {
+        errors.push('horário');
+      }
+      
+      const errorMessage = errors.length > 0 
+        ? `Preencha os campos obrigatórios: ${errors.join(', ')}`
+        : 'Por favor, preencha todos os campos obrigatórios';
+        
+      await this.showToast(errorMessage, 'warning');
       return;
     }
 
     if (!this.notificationPermission) {
       await this.showToast(
-        'É necessário permitir notificações para criar lembretes',
+        'Permita as notificações para criar lembretes. Clique no botão "Permitir Notificações" acima.',
         'warning'
       );
       return;
@@ -316,6 +329,16 @@ export class CreateReminderModalComponent implements OnInit {
 
     try {
       const formValue = this.reminderForm.value;
+
+      // Validar se filme foi selecionado dos favoritos (exceto em edição)
+      if (!this.isEditing && !formValue.moviePoster) {
+        await this.showToast(
+          'Selecione um filme dos seus favoritos usando o botão "Escolher dos Favoritos".',
+          'warning'
+        );
+        this.loading = false;
+        return;
+      }
 
       // Validar data no futuro
       const reminderDateTime = new Date(formValue.reminderDate);
@@ -327,10 +350,23 @@ export class CreateReminderModalComponent implements OnInit {
       const minimumTime = new Date(currentTime.getTime() + 60 * 1000); // 1 minuto no futuro
 
       if (reminderDateTime.getTime() <= minimumTime.getTime()) {
-        await this.showToast(
-          'A data do lembrete deve ser pelo menos 1 minuto no futuro',
-          'warning'
-        );
+        const now = new Date();
+        const timeNow = now.toLocaleTimeString('pt-PT', { hour: '2-digit', minute: '2-digit' });
+        const dateNow = now.toLocaleDateString('pt-PT');
+        const selectedTime = reminderDateTime.toLocaleTimeString('pt-PT', { hour: '2-digit', minute: '2-digit' });
+        const selectedDate = reminderDateTime.toLocaleDateString('pt-PT');
+        
+        if (selectedDate === dateNow) {
+          await this.showToast(
+            `O horário ${selectedTime} já passou (agora são ${timeNow}). Escolha um horário futuro.`,
+            'warning'
+          );
+        } else {
+          await this.showToast(
+            `A data ${selectedDate} às ${selectedTime} já passou. Escolha uma data e horário futuros.`,
+            'warning'
+          );
+        }
         this.loading = false;
         return;
       }
@@ -367,23 +403,41 @@ export class CreateReminderModalComponent implements OnInit {
         'success'
       );
     } catch (error: unknown) {
-      console.error('Erro ao salvar lembrete:', error);
+      console.error('❌ Erro detalhado ao salvar lembrete:', {
+        error: error,
+        message: error instanceof Error ? error.message : 'Erro desconhecido',
+        stack: error instanceof Error ? error.stack : null,
+        formData: this.reminderForm.value,
+        isEditing: this.isEditing
+      });
 
       // Mensagem mais específica baseada no tipo de erro
-      let errorMessage = 'Ocorreu um erro ao salvar o lembrete. ';
+      let errorMessage = 'Erro ao criar lembrete';
 
       if (error instanceof Error) {
-        if (error.message.includes('favorites')) {
-          errorMessage =
-            'O filme precisa estar nos favoritos para criar um lembrete.';
-        } else if (error.message.includes('notification')) {
-          errorMessage =
-            'Não foi possível agendar a notificação. Verifique as permissões.';
+        if (error.message.includes('já passou')) {
+          // Erro de data/horário no passado - a mensagem já foi formatada no serviço
+          errorMessage = error.message;
+        } else if (error.message.includes('notificações estão desabilitadas') || error.message.includes('Notificações estão desabilitadas')) {
+          errorMessage = 'As notificações estão desabilitadas. Ative-as nas configurações para criar lembretes.';
+        } else if (error.message.includes('Permissões de notificação não concedidas')) {
+          errorMessage = 'Permissões de notificação negadas. Vá às configurações do dispositivo e ative as notificações para esta app.';
+        } else if (error.message.includes('favorites')) {
+          errorMessage = 'Adicione o filme aos favoritos primeiro para criar um lembrete.';
+        } else if (error.message.includes('notification') || error.message.includes('permiss')) {
+          errorMessage = 'Erro de notificação. Verifique se as permissões estão ativadas nas configurações do dispositivo.';
+        } else if (error.message.includes('futuro')) {
+          errorMessage = 'Escolha uma data e horário futuros para o lembrete.';
+        } else if (error.message.includes('network') || error.message.includes('internet')) {
+          errorMessage = 'Erro de conexão. Verifique a sua ligação à internet.';
+        } else if (error.message.includes('storage') || error.message.includes('disk')) {
+          errorMessage = 'Erro de armazenamento. Verifique se há espaço disponível no dispositivo.';
         } else {
-          errorMessage += 'Por favor, tente novamente.';
+          // Mostrar mensagem mais genérica mas útil
+          errorMessage = `Erro no dispositivo. Tente reiniciar a app ou contacte o suporte. (${error.message.substring(0, 50)}...)`;
         }
       } else {
-        errorMessage += 'Por favor, tente novamente.';
+        errorMessage = 'Erro inesperado. Tente novamente ou reinicie a aplicação.';
       }
 
       await this.showToast(errorMessage, 'danger');
